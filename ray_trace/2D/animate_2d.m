@@ -4,7 +4,6 @@
 % R: radius of curvature
 % w: thickness at center
 % l: Spacing
-cd c:\Data\ES96\ICOS
 r = 2;
 R = 45;
 w = 0.2;
