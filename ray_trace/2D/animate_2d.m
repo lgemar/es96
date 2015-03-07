@@ -1,15 +1,11 @@
 %%
 % Draw two 2-D mirrors
-% r: radius
-% R: radius of curvature
-% w: thickness at center
-% l: Spacing
-r = 2;
-R = 45;
-w = 0.2;
-l = 8; % cavity lenth
-l1 = 9; % position of collection mirror
-lf = l1 + r;
+r = 2; % lens radius (in)
+R = 45; % radius of curvature of the lens (in)
+w = 0.2; % thickness at center (in)
+l = 8; % cavity lenth (in)
+l1 = 9; % position of collection mirror, inch past second ICOS mirror
+lf = l1 + 2*r; % d/f = 1
 
 clf
 M1 = mirror(r, R, w, [0 0], [1 0]);
