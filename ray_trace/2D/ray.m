@@ -43,6 +43,7 @@ classdef ray
       Rr = ray(R.E, R.D - 2 * sum(N.*R.D)*N);
     end
     function [h_out, th_out] = draw(R, varargin)
+	  % draw the raw from origin to endpoint
       x = [R.O(1) R.E(1)];
       y = [R.O(2) R.E(2)];
       h = plot(x, y, 'r');
