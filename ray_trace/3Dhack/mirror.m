@@ -23,15 +23,12 @@ classdef mirror
       
       perp = M.normal * [0 1; -1 0]; % clockwise rotation of normal by 90 degress
       RM = [ M.normal; perp]; % reflection matrix
-      
       th_max = asin(M.r/M.R); % theta max
       theta = th_max * [-1:.2:1]';
-      
       x = [-w; -w; R*(1-cos(theta)); -w]; 
       y = [r; -r; R*sin(theta); r];
       xy = [x,y]*RM + ones(length(x),1)*M.P0; % x outline of mirror shape
       fill(xy(:,1),xy(:,2),M.color); % fill polygon of mirror shape
-      
       M.backside = ray(M.P0 + [-M.w -M.r]*RM, [0 1]*RM);
       M.face = arc(M.P0 + [M.R 0]*RM, M.R, [-th_max th_max]);
     end

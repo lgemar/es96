@@ -13,7 +13,7 @@ classdef ray
     end
     function R = intersect_ray(R,R2)
       % R1.interect_ray(R2);
-      % Extends R1 to a point where it interects R2, where R2 is a plane
+      % Extends R1 to a point where it interects R2
       M = [-R.D(2) R.D(1); -R2.D(2) R2.D(1)];
       A = [R.O(2)*R.D(1)-R.O(1)*R.D(2); R2.O(2)*R2.D(1)-R2.O(1)*R2.D(2)];
       R.E = (M\A)';
@@ -46,9 +46,7 @@ classdef ray
 	  % draw the raw from origin to endpoint
       x = [R.O(1) R.E(1)];
       y = [R.O(2) R.E(2)];
-      z = [R.O(3) R.E(3)];
-      h = plot3(x, y, z, 'r');
-      % TODO: figure out what this does
+      h = plot(x, y, 'r');
       if ~isempty(varargin)
         th = mtext(mean(x), mean(y), varargin{:});
       end
@@ -60,12 +58,10 @@ classdef ray
       end
     end
     function R = propagate(R, distance)
-      % This should be fine for 3D 
       % R.propagate;
       % Switches endpoint to origin and extends endpoint along direction
       R.O = R.E;
       if nargin < 2
-        % Defines a default distance to travel
         distance = 1;
       end
       R.E = R.O + distance*R.D;
