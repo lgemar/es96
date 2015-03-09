@@ -23,11 +23,13 @@ theta=linspace(-angle_max,angle_max,resolution);
 phi=linspace(pi/2-angle_max,pi/2+angle_max,resolution);
 [phi,theta]=meshgrid(phi,theta);
 
-% for i=1:resolution
-%     if abs(theta(i)^2+(phi(i)-pi/2)^2) > angle_max^2
-%         theta(i)=[]; phi(i)=[];
-%     end
-% end
+for i=1:resolution
+    for j = 1:resolution
+        if (abs(theta(i,j)^2+(phi(i,j)-pi/2)^2)) > (angle_max^2)
+            theta(i,j)=NaN; phi(i,j)=NaN;
+        end
+    end
+end
 
 x=R*sin(phi).*cos(theta);
 y=R*sin(phi).*sin(theta);
