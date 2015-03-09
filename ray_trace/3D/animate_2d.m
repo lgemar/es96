@@ -15,7 +15,7 @@ lf = l1 + 2*r; % d/f = 1
 % surface) 
 % --> Backside equation (second priority) 
 % 2) Rays --> to 3D 
-% --> Intersect Ray (Jordan) 
+% --> Intersect Plane (Jordan) 
 % --> Intersect Arc (Lukas) 
 % 3) Lens --> to 3D (Jordan) 
 % 4) Ray dissipation --> add to Ray structure? 
