@@ -29,9 +29,7 @@ classdef mirror
       
       
       % **** TODO: this requires synchronized changes in ray and arc ****
-      M.backside = ray(M.P0 + [-M.w -M.r]*RM, [0 1]*RM);
-      % Point P = P0 - [w 0 0]*M.normal;
-      % and normal vector = M.normal;
+      M.backside = plane(M.normal , P0 - [w 0 0]*M.normal);
       M.face = arc(M.P0 + [M.R 0]*RM, M.R, [-th_max th_max]);
       % eqn of sphere is x = R + sqrt(R^2-y^2-z^2);
     end
