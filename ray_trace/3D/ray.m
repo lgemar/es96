@@ -11,6 +11,12 @@ classdef ray
       R.D = D/sqrt(sum(D.^2));
       R.E = O+D;
     end
+    function R = intersect_plane(R, P)
+        % Ray.intersect_plane(Plane)
+        % Extends Ray to a point where it intersects plane P
+        d = dot(P.point - R.O, P.normal) / dot(R.D, P.normal);
+        R.E = d*R.D + R.O;
+    end
     function R = intersect_ray(R,R2)
       % R1.interect_ray(R2);
       % Extends R1 to a point where it interects R2, where R2 is a plane
