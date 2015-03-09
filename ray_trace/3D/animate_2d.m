@@ -1,14 +1,4 @@
 %%
-clear all 
-clf
-% Draw two 2-D mirrors
-r = 2; % lens radius (in)
-R = 45; % radius of curvature of the lens (in)
-w = 0.2; % thickness at center (in)
-l = 8; % cavity lenth (in)
-l1 = 9; % position of collection mirror, inch past second ICOS mirror
-lf = l1 + 2*r; % d/f = 1
-
 % MAIN TODOS: done by Sunday night
 % 1) Mirror --> to 3D (Crystal) 
 % --> Frontside equation (start here --> curved surface, equation of
@@ -24,17 +14,35 @@ lf = l1 + 2*r; % d/f = 1
 % Integrate changes into a working animation
 
 
+clear all;
+clf
+hold on; 
+
+% Set all parameters
+r = 2; % lens radius (in)
+R = 45; % radius of curvature of the lens (in)
+w = 0.2; % thickness at center (in)
+l = 8; % cavity length (in)
+l1 = l+1; % position of collection lens, inch past second ICOS mirror
+lf = l1 + 2*r; % d/f = 1
+
+% make and draw two mirrors in cavity
+M1 = mirror(r, R, w, [0 0 0], [1 0 0]);
+mirror3d(0, 0, 1, w, r, R); 
+M2 = mirror(r, R, w, [l 0 0], [-1 0 0]);
+mirror3d(l, 0, -1, w, r, R);
+
+
 % Make the mirrors
 % TODO: This mirror will need curvature defined by R
 % TODO: Make mirror into an object in 3D, with a  backside and face
-mirror3d(0, 0, 1, w, r); 
-hold on;
-mirror3d(l, 0, -1, w, r);
+
 
 % TODO: make this 3D 
 L = lens(0.2, M2.r, 15, ray([l1, 0], [1 0]));
 
 % Make it look pretty
+set(gca,'xlim', [-2.2 lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
 camlight left;

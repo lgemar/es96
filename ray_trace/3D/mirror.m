@@ -1,14 +1,14 @@
 classdef mirror
   properties
-    r %radius
-    R %radius of curavture
+    r % radius of mirror
+    R % radius of curavture
     w % thickness of lens at center
-    P0 % 
+    P0 % position of center of mirror
     normal % normal to the mirror 
     ctr % center of big circle drawn out by mirror
     color % mirror color in animation
-    backside
-    face
+    backside % equation of the plane
+    face % equation of the arc
   end
   methods
     function M = mirror(r, R, w, P0, normal)
@@ -17,23 +17,23 @@ classdef mirror
       M.R = R;
       M.w = w;
       M.P0 = P0;
-      M.normal = normal/sqrt(sum(normal.^2));
+      M.normal = normal/norm(normal);
       M.ctr = P0 + R*M.normal;
       M.color = [.5 .5 1];
       
-      perp = M.normal * [0 1; -1 0]; % clockwise rotation of normal by 90 degress
+      perp = cross(M.normal,[1 1 1]); % perpendicular vector 
+      if isequal(perp,[0 0 0])
+          perp = cross( M.normal , [1 1 0]);
+      end
       RM = [ M.normal; perp]; % reflection matrix
       
-      th_max = asin(M.r/M.R); % theta max
-      theta = th_max * [-1:.2:1]';
       
-      x = [-w; -w; R*(1-cos(theta)); -w]; 
-      y = [r; -r; R*sin(theta); r];
-      xy = [x,y]*RM + ones(length(x),1)*M.P0; % x outline of mirror shape
-      fill(xy(:,1),xy(:,2),M.color); % fill polygon of mirror shape
-      
+      % **** TODO: this requires synchronized changes in ray and arc ****
       M.backside = ray(M.P0 + [-M.w -M.r]*RM, [0 1]*RM);
+      % Point P = P0 - [w 0 0]*M.normal;
+      % and normal vector = M.normal;
       M.face = arc(M.P0 + [M.R 0]*RM, M.R, [-th_max th_max]);
+      % eqn of sphere is x = R + sqrt(R^2-y^2-z^2);
     end
   end % End of methods block
 end % End of classdef block
