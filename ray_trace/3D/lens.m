@@ -1,28 +1,36 @@
 classdef lens
   properties
-    w % width at edges
+    w % width at center
     r % radius
-    R % radius of curvature
+    R1 % radius of curvature 1
+    R2 % radius of curvature 2
     N % normal ray
+    P1 % (x,y,z) coordinants of sphere with radius R1
+    P2 % (x,y,z) coordinants of sphere with radius R2
     F1 % face 1
     F2 % face 2
-    halfangle
-    rotangle
+    phiR1Max % Maximum phi for sphere with radius R1
+    thetaR1Max % Maximum theta for sphere with radius R1
+    phiR2Max % Maximum phi for sphere with radius R2
+    thetaR2Max % Maximum theta for sphere with radius R2
     color
   end
   methods
-    function L = lens(w, r, R, N)
-      % L = lens(w, r, R, N);
+    function L = lens(x, y, z, w, r, R1, R2, N)
+      % L = lens(w, r, R1, R2, N);
       L.w = w;
       L.r = r;
-      L.R = R;
+      L.R1 = R1;
+      L.R2 = R2;
       L.N = N;
       L.color = [.5 .5 1];
-      L.halfangle = asin(L.r/L.R);
-      L.rotangle = atan2(N.D(2), N.D(1));
-      L.F1 = arc(L.N.O+(L.w/2-L.R*cos(L.halfangle))*L.N.D, L.R, [-L.halfangle L.halfangle]+L.rotangle);
-      L.F2 = arc(L.N.O-(L.w/2-L.R*cos(L.halfangle))*L.N.D, L.R, [-L.halfangle L.halfangle]+L.rotangle+pi);
-      fill([L.F1.x; L.F2.x; L.F1.x(1)], [L.F1.y; L.F2.y; L.F1.y(1)], L.color);
+      
+      L.P1 = [x y z];
+      L.P2 = [x y z];
+      L.P1(1) = L.P1(1) - sqrt((L.R1-(w/2))^2 - L.P1(3)^2*(1-(w/2)*L.R1)^2 + L.P1(2)^2*((L.R1-(w/2))^2 - L.P1(3)^2*(1-(w/2)*L.R1)^2)/(L.R1^2 + L.P1(3)^2));
+      L.P2(1) = L.P2(1) + sqrt((L.R2-(w/2))^2 - L.P2(3)^2*(1-(w/2)*L.R2)^2 + L.P2(2)^2*((L.R2-(w/2))^2 - L.P2(3)^2*(1-(w/2)*L.R2)^2)/(L.R2^2 + L.P2(3)^2));
+    
+    
     end
   end
 end
