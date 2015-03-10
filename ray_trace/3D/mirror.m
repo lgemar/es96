@@ -26,7 +26,7 @@ classdef mirror
 %       end
 %       perp = perp/norm(perp);
       
-      M.backside = plane(M.normal , P0 - [w 0 0]*M.normal);
+      M.backside = plane(M.normal , P0 - w*M.normal);
       M.face = arc(M.P0 + M.R*M.normal, M.R, [th_max th_max]);
 
     end
