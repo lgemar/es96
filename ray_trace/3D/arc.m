@@ -12,8 +12,8 @@ classdef arc
       A.ctr = ctr;
       A.R = R;
       A.angle = angle;
-      thetas = -A.angle + A.angle*[0:.001:2]';
-      phis = -A.angle+pi/2 + A.angle*[0:.001:2]';
+      thetas = -A.angle + A.angle*[0:.04:2]';
+      phis = -A.angle+pi/2 + A.angle*[0:.04:2]';
       A.x = A.ctr(1) + R*cos(thetas)*sin(phis)';
       A.y = A.ctr(2) + R*sin(thetas)*sin(phis)';
       A.z = A.ctr(3) + R*cos(phis);
