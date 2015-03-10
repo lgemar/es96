@@ -10,6 +10,9 @@ function x1 = ray_sphere_solver(p1, p2, sphere_center, sphere_radius)
 
     % Define the origin and direction for the line in 3D space
     % Imagine the equation of the line is given by x = o + d * l
+    p1 = p1'; 
+    p2 = p2'; 
+    sphere_center = sphere_center'; 
     o = p1;
     l = (p2 - p1) / sqrt((p2 - p1)' * (p2 - p1)); 
 
@@ -30,10 +33,10 @@ function x1 = ray_sphere_solver(p1, p2, sphere_center, sphere_radius)
         solution2 = o + d2 * l;
 
         % Ensure that the solution is the one that points in the direction of the ray
-        if(solution1' * l > 0) 
+        if(d1 > 0) 
             x1 = solution1; 
             x2 = solution2; 
-        else if(solution2' * l > 0)
+        else if(d2 > 0)
             x1 = solution2; 
             x2 = solution1;
         else

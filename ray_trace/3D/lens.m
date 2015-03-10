@@ -17,7 +17,7 @@ classdef lens
     color
   end
   methods
-    function L = lens(x, y, z, w, r, R1, R2, N)
+    function L = lens(C, w, r, R1, R2, N)
       % L = lens(w, r, R1, R2, N);
       L.w = w;
       L.r = r;
@@ -25,7 +25,7 @@ classdef lens
       L.R2 = R2;
       L.N = N;
       L.color = [.5 .5 1];
-      L.C = [x y z];
+      L.C = C;
       L.P1 = [0 0 0];
       L.P2 = [0 0 0];
       L.P1(1) = L.C(1) - sqrt((L.R1-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R1)^2 + L.C(2)^2*((L.R1-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R1)^2)/(L.R1^2 + L.C(3)^2));

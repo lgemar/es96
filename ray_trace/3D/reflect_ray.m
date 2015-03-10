@@ -5,7 +5,9 @@ function new_direction_unit = reflect_ray(p1, p2, n)
     % @a new_direction is the direction of the outgoing ray
     % @returns @a new_direction_unit, which is a unit vector in the direction of outgoing ray
 
-
+    p1 = p1'; 
+    p2 = p2';
+    n = n'; 
     old_direction = (p2 - p1);
     new_direction = -2 * (old_direction' * n) * n + old_direction;
 
