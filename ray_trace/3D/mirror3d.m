@@ -16,7 +16,7 @@ surfl(X,Y,Z);
 shading flat;
 set(gca,'dataaspectratio',[1 1 1]);
 
-%%
+
 angle_max = asin(r/R); % max angle for mirror as spherical cap
 
 theta=linspace(-angle_max,angle_max,resolution);

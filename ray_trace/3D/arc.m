@@ -1,19 +1,22 @@
 classdef arc
   properties
-    ctr
-    R
-    thetas
+    ctr % 
+    R % radius of curvature
+    angle % max angle to sweep
     x
     y
+    z
   end
   methods
-    function A = arc(ctr, R, thetas)
+    function A = arc(ctr, R, angle)
       A.ctr = ctr;
       A.R = R;
-      A.thetas = thetas;
-      theta = thetas(1) + (thetas(2)-thetas(1))*[0:.05:1]';
-      A.x = A.ctr(1) + R*cos(theta);
-      A.y = A.ctr(2) + R*sin(theta);
+      A.angle = angle;
+      thetas = -A.angle + A.angle*[0:.001:2]';
+      phis = -A.angle+pi/2 + A.angle*[0:.001:2]';
+      A.x = A.ctr(1) + R*cos(thetas)*sin(phis)';
+      A.y = A.ctr(2) + R*sin(thetas)*sin(phis)';
+      A.z = A.ctr(3) + R*cos(phis);
     end
     function n = normal(A, P)
       % n = A.normal(P);

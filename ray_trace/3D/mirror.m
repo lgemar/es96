@@ -12,7 +12,6 @@ classdef mirror
   end
   methods
     function M = mirror(r, R, w, P0, normal)
-    % M = mirror(ax, r, R, w, P0, normal);
       M.r = r;
       M.R = R;
       M.w = w;
@@ -21,17 +20,15 @@ classdef mirror
       M.ctr = P0 + R*M.normal;
       M.color = [.5 .5 1];
       
-      perp = cross(M.normal,[1 1 1]); % perpendicular vector 
-      if isequal(perp,[0 0 0])
-          perp = cross( M.normal , [1 1 0]);
-      end
-      RM = [ M.normal; perp]; % reflection matrix
+%       perp = cross(M.normal,[1 1 1]); % perpendicular vector 
+%       if isequal(perp,[0 0 0])
+%           perp = cross( M.normal , [1 1 0]);
+%       end
+%       perp = perp/norm(perp);
       
-      
-      % **** TODO: this requires synchronized changes in ray and arc ****
       M.backside = plane(M.normal , P0 - [w 0 0]*M.normal);
-      M.face = arc(M.P0 + [M.R 0]*RM, M.R, [-th_max th_max]);
-      % eqn of sphere is x = R + sqrt(R^2-y^2-z^2);
+      M.face = arc(M.P0 + M.R*M.normal, M.R, [th_max th_max]);
+
     end
   end % End of methods block
 end % End of classdef block
