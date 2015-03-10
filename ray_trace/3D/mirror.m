@@ -19,6 +19,7 @@ classdef mirror
       M.normal = normal/norm(normal);
       M.ctr = P0 + R*M.normal;
       M.color = [.5 .5 1];
+      th_max = asin(r / R );
       
 %       perp = cross(M.normal,[1 1 1]); % perpendicular vector 
 %       if isequal(perp,[0 0 0])
