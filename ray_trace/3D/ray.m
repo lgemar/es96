@@ -21,14 +21,14 @@ classdef ray
       % R.interect_arc(A);
       % Extends R to a point where it interects arc A
       % First check that R starts inside A's circle
-      intersect_point = ray_sphere_solver(R.O, R.E, A.ctr, A.R); 
+      intersect_point = ray_sphere_solver(R.O', R.E', A.ctr', A.R); 
       R.E = intersect_point'; 
     end
     function [R,Rr] = reflect_arc(R,A)
       % [R,Rr] = R.reflect_arc(A);
       % Propagate ray R until it intersects arc A,
       % then return reflecting ray Rr.
-      intersect_point = ray_sphere_solver(R.O, R.E, A.ctr, A.R); 
+      intersect_point = ray_sphere_solver(R.O', R.E', A.ctr', A.R); 
       intersect_point = intersect_point'; 
       N = A.normal(intersect_point);
       new_direction = reflect_ray(R.O, R.E, N);

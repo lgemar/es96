@@ -3,6 +3,8 @@ function x1 = ray_sphere_solver(p1, p2, sphere_center, sphere_radius)
     % @param[in] p2 is any point on the ray
     % @param[in] sphere_center is a point in 3D space defining the center of the sphere
     % @param[in] sphere_radius is the radius of the sphere being intersected with the line
+    % @pre @a p1, @a p2, and @a sphere_center are all column vectors
+    % @post @a x1 is returned as a column vector
     % @post x1 is the solution such that (p2 - p1)' * x1 > 0
     % @post x2 is the solution such that (p2 - p1)' * x2 < 0
     % @post if there is no solution, x1 = NaN
@@ -10,9 +12,6 @@ function x1 = ray_sphere_solver(p1, p2, sphere_center, sphere_radius)
 
     % Define the origin and direction for the line in 3D space
     % Imagine the equation of the line is given by x = o + d * l
-    p1 = p1'; 
-    p2 = p2'; 
-    sphere_center = sphere_center'; 
     o = p1;
     l = (p2 - p1) / sqrt((p2 - p1)' * (p2 - p1)); 
 
