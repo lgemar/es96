@@ -18,7 +18,8 @@
 % 2) Angle of laser input to Harriet cell 
 % Focus the light for the detector -- focus the light for the detector
 % Path length
-%% MAIN TODOS: done by Sunday night
+
+%% MAIN TODOS
 % 1) Mirror --> to 3D (Crystal) 
 % --> Frontside equation (start here --> curved surface, equation of
 % surface) 
