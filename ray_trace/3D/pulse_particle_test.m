@@ -60,6 +60,8 @@ title('Mirror spot pattern')
 detector_spot_pattern = figure(3); 
 hold on; 
 title('Deetector spot pattern')
+xlim([-0.5 0.5])
+ylim([-0.5 0.5])
 
 cavity_pulses = {P_init};
 harriet_pulses = {}; 
