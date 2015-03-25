@@ -11,8 +11,10 @@ hold on
 % 
 % What do we need for this to happen? 
 % 1) Insert correct values for ICOS mirrors (in) - Sophie
-% 2) (Insert correct values for the Lens) - Lukas
-% 3) Adjust parameters for Harriet cell and input beam (**p0** and
+% 2) Add in power losses at each surface (in PulsePoint) - Sophie, and
+% Lukas will check 
+% 3) (Insert correct values for the Lens) - Lukas
+% 4) Adjust parameters for Harriet cell and input beam (**p0** and
 % **dir_initial** are the initial position and direction of the laser beam)
 % - Sophie
 %% Set all parameters and draw mirrors

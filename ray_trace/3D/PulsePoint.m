@@ -28,6 +28,7 @@ classdef PulsePoint
             P.p = P.p + d*P.dir; 
             new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
             P2 = PulsePoint(P.p, new_dir); 
+            % P2.pow = 0.9 * P.pow; 
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2, dt) 
