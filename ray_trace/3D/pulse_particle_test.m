@@ -105,7 +105,7 @@ for i = 1:1000
         
         % Switch to detector spot pattern plot
         figure(detector_spot_pattern)
-        plot(P.p(2), P.p(3), 'ro')
+        plot(P.p(2), P.p(3), 'r.')
         
         % Switch back to 3d model
         figure(model_3d)

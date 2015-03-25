@@ -34,6 +34,7 @@ classdef PulsePoint
              P.p = P.p + d*P.dir; 
              P.dir = refract_ray(P.pos_prev, P.p, ctr - P.p, n1, n2);
         end
+        
         function [P, P2] = spherical_mirror_constraint(P, ctr, r, dt)
             % Initialize bleed through pulse
             P2 = []; 

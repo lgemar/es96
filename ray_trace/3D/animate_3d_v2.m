@@ -20,6 +20,7 @@ lf = l1 + 2*r; % d/f = 1
 % make and draw two mirrors in cavity
 mirror3d(0, 0, 1, w, r, R); 
 mirror3d(l, 0, -1, w, r, R);
+mirror3d(-1, 0, -1, w, r, R); 
 
 % Draw the lense after the cavity
 lense3d( l1, 0, r, 3*r);
@@ -39,17 +40,25 @@ camlight headlight;
 
 
 %% Pulse particle Test
-p0 = [-1 0.8 0.8]'; 
+p0 = [-2 0.8 0.8]'; 
 dir_initial = [1 -0.1 -0.06]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
 
+% Radius of curvature of the ICOS mirrors
 r = 30; 
+r_harriet = 30; 
+
+% Calculate the locations of the centers of the ICOS mirrors
 ctr1 = [8 0 0]' - r * [1 0 0]'; 
 ctr2 = [0 0 0]' + r * [1 0 0]';
+ctr_harriet = [-1 0 0]' + r_harriet * [1 0 0]'; 
 
+% Lens radii of curvature
 lens_r1 = 10; 
 lens_r2 = 300; 
+
+% Calculate the centers of curvature for the lens
 lens_ctr1 = [9 0 0]' + lens_r1 * [1 0 0]'; 
 lens_ctr2 = [9.5 0 0]' + lens_r2 * [1 0 0]'; 
 
@@ -69,7 +78,7 @@ harriet_pulses = {};
 % Inner loop updates each individual pulse
 for i = 1:1000   
     % Take a care of all of the cavity pulses
-    for j = 1:length(cavity_pulses)  
+    for j = i:length(cavity_pulses)  
         % Grab the current pulse that will travel through the system
         P = cavity_pulses{j};
         
@@ -87,6 +96,10 @@ for i = 1:1000
         
         % Extend the pulse back to the first lens and create bleedthrough
         [P2, P3] = P2.spherical_mirror_constraint(ctr2, r, dt);
+        P2.draw(); 
+        
+        % P2 should travel to the Harriet cell mirror before reflecting
+        [P2, P4] = P2.spherical_mirror_constraint(ctr_harriet, r_harriet, dt); 
         P2.draw(); 
         
         % Intersect the ray with the first surface of the lens
@@ -109,7 +122,7 @@ for i = 1:1000
         figure(model_3d)
         
         % Update the cavity pulse ray
-        cavity_pulses = {P3};
+        cavity_pulses = [cavity_pulses, {P3, P4}];
+        drawnow;
     end
-    drawnow;
 end
