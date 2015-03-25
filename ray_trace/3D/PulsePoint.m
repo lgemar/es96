@@ -17,13 +17,18 @@ classdef PulsePoint
             x = [P.pos_prev(1) P.p(1)];
             y = [P.pos_prev(2) P.p(2)];
             z = [P.pos_prev(3) P.p(3)];
-            h = plot3(x, y, z, 'r', 'LineWidth', P.pow * 20);
+            %h = plot3(x, y, z, 'r', 'LineWidth', P.pow * 20);
+            h = plot3(x, y, z, 'r');
         end
         
-        function P = vertical_plane_constraint(P, x_pos)
+        function [P, P2] = vertical_plane_constraint(P, x_pos)
+            P2 = []; 
             d = x_pos - P.p(1); 
             P.pos_prev = P.p; 
             P.p = P.p + d*P.dir; 
+            new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
+            P2 = PulsePoint(P.p, new_dir); 
+            % P2.pow = 0.9 * P.pow; 
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2, dt) 

@@ -3,6 +3,20 @@ clear variables
 close all
 hold on
 
+% Questions for Harriet cell
+% 1) how is power effected by the radius of curvature of the harriet cell
+% mirror? What is the maximum power we can achieve? 
+% 2) What is the angle of incidence for the incoming beam? 
+% 3) What is the "best" diameter of the Harriet cell
+% 
+% What do we need for this to happen? 
+% 1) Insert correct values for ICOS mirrors (in) - Sophie
+% 2) Add in power losses at each surface (in PulsePoint) - Sophie, and
+% Lukas will check 
+% 3) (Insert correct values for the Lens) - Lukas
+% 4) Adjust parameters for Harriet cell and input beam (**p0** and
+% **dir_initial** are the initial position and direction of the laser beam)
+% - Sophie
 %% Set all parameters and draw mirrors
 
 model_3d = figure(1); 
@@ -44,6 +58,7 @@ p0 = [-2 0.8 0.8]';
 dir_initial = [1 -0.1 -0.06]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
+P_cavity = []; 
 
 % Radius of curvature of the ICOS mirrors
 r = 30; 
@@ -62,67 +77,83 @@ lens_r2 = 300;
 lens_ctr1 = [9 0 0]' + lens_r1 * [1 0 0]'; 
 lens_ctr2 = [9.5 0 0]' + lens_r2 * [1 0 0]'; 
 
+N = 100; % number of frame updates
+
+% preallocate matrices for mirror and detector spot patterns
+numbruns = N*(N+1) / 2;
+mirror_spots = zeros(numbruns, 2);
+detector_spots = zeros(numbruns, 2);
+
+%color gradient
+c = linspace(1,10,numbruns);
+
+% 1) Think about laser overlap
+% 2) Plotting points on mirror in 2D 
+% Outer loop is the number of frame updates
+% Inner loop updates each individual pulse
+counter = 0; 
+for i = 1:N   
+    % Take a care of all of the cavity pulses
+    % Reflect the incoming ray off the back face of the ICOS mirror
+    
+    [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
+    P_cavity.draw(); 
+    
+    [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
+    P_harriet.draw(); 
+        
+    P = P_cavity; 
+
+    index = counter+1;
+
+    % Extend the pulse to the second lens and create bleedthrough
+    [P, P2] = P.spherical_mirror_constraint(ctr1, r, dt); 
+    figure(model_3d)
+    P.draw(); 
+
+    % Record mirror spot pattern
+    mirror_spots(index,1) = P2.p(2);
+    mirror_spots(index,2) = P2.p(3);
+
+    % Extend the pulse back to the first lens and create bleedthrough
+    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r, dt);
+    P2.draw();       
+
+    % Intersect the ray with the first surface of the lens
+    P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5, dt); 
+    P.draw(); 
+
+    % Intersect the ray with the second surface of the lens
+    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1, dt); 
+    P.draw(); 
+
+    % Intersect the ray with the plane of the detector
+    [P, ~] = P.vertical_plane_constraint(l1 + 4);
+    P.draw(); 
+
+    % Record detector spot pattern
+    detector_spots(index,1) = P.p(2);
+    detector_spots(index,2) = P.p(3);
+
+    % Update the cavity pulse ray
+    counter = counter + 1; 
+
+    drawnow;
+end
+
 mirror_spot_pattern = figure(2); 
 hold on; 
 title('Mirror spot pattern')
 
 detector_spot_pattern = figure(3); 
 hold on; 
-title('Deetector spot pattern')
+title('Detector spot pattern')
 
-cavity_pulses = {P_init};
-harriet_pulses = {}; 
-% 1) Think about laser overlap
-% 2) Plotting points on mirror in 2D 
-% Outer loop is the number of frame updates
-% Inner loop updates each individual pulse
-for i = 1:1000   
-    % Take a care of all of the cavity pulses
-    for j = i:length(cavity_pulses)  
-        % Grab the current pulse that will travel through the system
-        P = cavity_pulses{j};
-        
-        % Extend the pulse to the second lens and create bleedthrough
-        [P, P2] = P.spherical_mirror_constraint(ctr1, r, dt); 
-        figure(model_3d)
-        P.draw(); 
-        
-        % Switch to spot pattern plot
-        figure(mirror_spot_pattern)
-        plot(P2.p(2), P2.p(3), 'ro')
-        
-        % Switch back to 3d model
-        figure(model_3d)
-        
-        % Extend the pulse back to the first lens and create bleedthrough
-        [P2, P3] = P2.spherical_mirror_constraint(ctr2, r, dt);
-        P2.draw(); 
-        
-        % P2 should travel to the Harriet cell mirror before reflecting
-        [P2, P4] = P2.spherical_mirror_constraint(ctr_harriet, r_harriet, dt); 
-        P2.draw(); 
-        
-        % Intersect the ray with the first surface of the lens
-        P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5, dt); 
-        P.draw(); 
-        
-        % Intersect the ray with the second surface of the lens
-        P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1, dt); 
-        P.draw(); 
-        
-        % Intersect the ray with the plane of the detector
-        P = P.vertical_plane_constraint(l1 + 4);
-        P.draw(); 
-        
-        % Switch to detector spot pattern plot
-        figure(detector_spot_pattern)
-        plot(P.p(2), P.p(3), 'ro')
-        
-        % Switch back to 3d model
-        figure(model_3d)
-        
-        % Update the cavity pulse ray
-        cavity_pulses = [cavity_pulses, {P3, P4}];
-        drawnow;
-    end
-end
+% plot mirror spot pattern 
+figure(mirror_spot_pattern)
+scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
+
+% plot detector spot pattern
+figure(detector_spot_pattern)
+scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
+>>>>>>> harriet_cell
