@@ -77,7 +77,7 @@ lens_r2 = 300;
 lens_ctr1 = [9 0 0]' + lens_r1 * [1 0 0]'; 
 lens_ctr2 = [9.5 0 0]' + lens_r2 * [1 0 0]'; 
 
-N = 100; % number of frame updates
+N = 5000; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N*(N+1) / 2;
@@ -156,4 +156,3 @@ scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 % plot detector spot pattern
 figure(detector_spot_pattern)
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
->>>>>>> harriet_cell
