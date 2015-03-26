@@ -28,7 +28,8 @@ classdef PulsePoint
             P.p = P.p + d*P.dir; 
             new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
             P2 = PulsePoint(P.p, new_dir); 
-            % P2.pow = 0.9 * P.pow; 
+            % P2.pow = 0.99975 * P.pow; This is what I think it should be?
+            % 99.975% reflects back
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2, dt) 
@@ -43,7 +44,7 @@ classdef PulsePoint
         function [P, P2] = spherical_mirror_constraint(P, ctr, r, dt)
             % Initialize bleed through pulse
             P2 = []; 
-            reflectivity = 0.9; 
+            reflectivity = 0.99975; 
             
             % Determine if pulse is inside the sphere
             inside_sphere = sqrt( sum( (P.p - ctr).^2 ) ) < r;  

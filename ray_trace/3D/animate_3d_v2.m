@@ -22,19 +22,20 @@ hold on
 model_3d = figure(1); 
 hold on
 
-r = 2; % lens radius (in)
+r = 1.5; % lens radius (in)
 R = 30; % radius of curvature of the lens (in)
 R1 = 15; % Lens radii (1) 
 R2 = 15; % Lens radii (2)
 w = 0.2; % thickness at center (in)
-l = 8; % cavity length (in)
+l = 19.685; % cavity length (in)
 l1 = l+1; % position of collection lens, inch past second ICOS mirror
 lf = l1 + 2*r; % d/f = 1
+distance_harriet = 9.84 % distance between Harriet mirror and 1st ICOS mirror
 
 % make and draw two mirrors in cavity
 mirror3d(0, 0, 1, w, r, R); 
 mirror3d(l, 0, -1, w, r, R);
-mirror3d(-1, 0, -1, w, r, R); 
+mirror3d(-distance_harriet, 0, -1, w, r, R); 
 
 % Draw the lense after the cavity
 lense3d( l1, 0, r, 3*r);
@@ -45,7 +46,7 @@ cube3d([l1 + 2*r, -0.5, -0.5], 1)
 L = lens([l1, 0, 0], 0.2, r, R1, R2, ray([l1, 0, 0], [1 0 0]));
 
 % Make it look pretty
-set(gca,'xlim', [-2.2 lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
 camlight left;
@@ -54,28 +55,29 @@ camlight headlight;
 
 
 %% Pulse particle Test
-p0 = [-2 0.8 0.8]'; 
-dir_initial = [1 -0.1 -0.06]'; 
+p0 = [-(distance_harriet + 1) 0.8 0.8]'; 
+dir_initial = [1 -0.1 -0.05]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
 P_cavity = []; 
 
+
 % Radius of curvature of the ICOS mirrors
-r = 30; 
-r_harriet = 30; 
+r = 39.37; 
+r_harriet = 39.37; %19.685; 
 
 % Calculate the locations of the centers of the ICOS mirrors
-ctr1 = [8 0 0]' - r * [1 0 0]'; 
+ctr1 = [l 0 0]' - r * [1 0 0]'; 
 ctr2 = [0 0 0]' + r * [1 0 0]';
-ctr_harriet = [-1 0 0]' + r_harriet * [1 0 0]'; 
+ctr_harriet = [-distance_harriet 0 0]' + r_harriet * [1 0 0]'; 
 
 % Lens radii of curvature
 lens_r1 = 10; 
 lens_r2 = 300; 
 
 % Calculate the centers of curvature for the lens
-lens_ctr1 = [9 0 0]' + lens_r1 * [1 0 0]'; 
-lens_ctr2 = [9.5 0 0]' + lens_r2 * [1 0 0]'; 
+lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]'; 
+lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
 
 N = 100; % number of frame updates
 
@@ -156,4 +158,4 @@ scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 % plot detector spot pattern
 figure(detector_spot_pattern)
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
->>>>>>> harriet_cell
+%>>>>>>> harriet_cell
