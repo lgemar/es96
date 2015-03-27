@@ -27,7 +27,7 @@ R = 30; % radius of curvature of the lens (in)
 R1 = 15; % Lens radii (1) 
 R2 = 15; % Lens radii (2)
 w = 0.2; % thickness at center (in)
-l = 19.685; % cavity length (in)
+l = 15.685; % cavity length (in)
 l1 = l+1; % position of collection lens, inch past second ICOS mirror
 lf = l1 + 2*r; % d/f = 1
 distance_harriet = 9.84 % distance between Harriet mirror and 1st ICOS mirror
@@ -79,12 +79,13 @@ lens_r2 = 300;
 lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]'; 
 lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
 
-N = 100; % number of frame updates
+N = 200; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
-numbruns = N*(N+1) / 2;
+numbruns = N;
 mirror_spots = zeros(numbruns, 2);
 detector_spots = zeros(numbruns, 2);
+overall_area = zeros(numbruns, 1);
 
 %color gradient
 c = linspace(1,10,numbruns);
@@ -94,15 +95,18 @@ c = linspace(1,10,numbruns);
 % Outer loop is the number of frame updates
 % Inner loop updates each individual pulse
 counter = 0; 
+P_cavity = [];
 for i = 1:N   
     % Take a care of all of the cavity pulses
     % Reflect the incoming ray off the back face of the ICOS mirror
     
-    [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
-    P_cavity.draw(); 
+    if i == 1
+        [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
+        %P_cavity.draw(); 
+    end
     
-    [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
-    P_harriet.draw(); 
+    % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
+    %P_harriet.draw(); 
         
     P = P_cavity; 
 
@@ -111,27 +115,43 @@ for i = 1:N
     % Extend the pulse to the second lens and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r, dt); 
     figure(model_3d)
-    P.draw(); 
+    %P.draw(); 
 
     % Record mirror spot pattern
     mirror_spots(index,1) = P2.p(2);
     mirror_spots(index,2) = P2.p(3);
+    if index > 30
+        spot_points = mirror_spots((index-30):(index-1),:);
+        yn_zn = repmat([P2.p(2), P2.p(3)], 30, 1); 
+    else 
+        spot_points = mirror_spots(1:(index-1), :); 
+        yn_zn = repmat([P2.p(2), P2.p(3)], (index-1), 1); 
+    end
+    temp = spot_points - yn_zn;
+    temp_square = temp.^2;
+    d_2 = temp_square*[1;1];
+    d = sqrt(d_2);
+    areas = arrayfun(@overlap,d(1:min(index-1, 30))); 
+    % disp([d, areas]); 
+    overall_area(i) = sum(areas);
 
     % Extend the pulse back to the first lens and create bleedthrough
     [P2, P3] = P2.spherical_mirror_constraint(ctr2, r, dt);
-    P2.draw();       
+    %P2.draw();       
 
+    P_cavity = P3; 
+    
     % Intersect the ray with the first surface of the lens
     P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5, dt); 
-    P.draw(); 
+    %P.draw(); 
 
     % Intersect the ray with the second surface of the lens
     P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1, dt); 
-    P.draw(); 
+    %P.draw(); 
 
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
-    P.draw(); 
+    %P.draw(); 
 
     % Record detector spot pattern
     detector_spots(index,1) = P.p(2);
@@ -158,4 +178,14 @@ scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 % plot detector spot pattern
 figure(detector_spot_pattern)
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
+
+% plot overlapping area graph
+figure()
+maximum_cum_sum = conv(30*pi*0.059^2*ones(1, N), ones(1, 30)); 
+running_cum_sum = conv(overall_area, ones(1, 30)); 
+plot(running_cum_sum)
+ylim([0, 30*0.3281])
+
+% "goodness score" 
+goodness = sum(running_cum_sum) / sum(maximum_cum_sum)
 %>>>>>>> harriet_cell
