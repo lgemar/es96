@@ -79,7 +79,8 @@ lens_r2 = 300;
 lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]'; 
 lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
 
-N = 200; % number of frame updates
+
+N = 500; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
@@ -102,7 +103,7 @@ for i = 1:N
     
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
-        %P_cavity.draw(); 
+        P_cavity.draw(); 
     end
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
@@ -113,9 +114,9 @@ for i = 1:N
     index = counter+1;
 
     % Extend the pulse to the second lens and create bleedthrough
-    [P, P2] = P.spherical_mirror_constraint(ctr1, r, dt); 
+    [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
     figure(model_3d)
-    %P.draw(); 
+    P.draw(); 
 
     % Record mirror spot pattern
     mirror_spots(index,1) = P2.p(2);
@@ -136,22 +137,22 @@ for i = 1:N
     overall_area(i) = sum(areas);
 
     % Extend the pulse back to the first lens and create bleedthrough
-    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r, dt);
-    %P2.draw();       
+    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
+    P2.draw();       
 
     P_cavity = P3; 
     
     % Intersect the ray with the first surface of the lens
-    P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5, dt); 
-    %P.draw(); 
+    P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
+    P.draw(); 
 
     % Intersect the ray with the second surface of the lens
-    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1, dt); 
-    %P.draw(); 
+    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+    P.draw(); 
 
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
-    %P.draw(); 
+    P.draw(); 
 
     % Record detector spot pattern
     detector_spots(index,1) = P.p(2);
@@ -179,13 +180,3 @@ scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 figure(detector_spot_pattern)
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
 
-% plot overlapping area graph
-figure()
-maximum_cum_sum = conv(30*pi*0.059^2*ones(1, N), ones(1, 30)); 
-running_cum_sum = conv(overall_area, ones(1, 30)); 
-plot(running_cum_sum)
-ylim([0, 30*0.3281])
-
-% "goodness score" 
-goodness = sum(running_cum_sum) / sum(maximum_cum_sum)
-%>>>>>>> harriet_cell
