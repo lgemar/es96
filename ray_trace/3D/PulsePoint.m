@@ -17,7 +17,6 @@ classdef PulsePoint
             x = [P.pos_prev(1) P.p(1)];
             y = [P.pos_prev(2) P.p(2)];
             z = [P.pos_prev(3) P.p(3)];
-            %h = plot3(x, y, z, 'r', 'LineWidth', P.pow * 20);
             h = plot3(x, y, z, 'r');
         end
         
@@ -28,10 +27,10 @@ classdef PulsePoint
             P.p = P.p + d*P.dir; 
             new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
             P2 = PulsePoint(P.p, new_dir); 
-            % P2.pow = 0.9 * P.pow; 
+            P2.pow = 0.99975 * P.pow; % 99.975% reflects back
         end
         
-        function P = lens_constraint(P, ctr, r, n1, n2, dt) 
+        function P = lens_constraint(P, ctr, r, n1, n2) 
              dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
              d = fzero(dtoarc, 0);
              % Update Pulse variables for refraction
@@ -40,28 +39,24 @@ classdef PulsePoint
              P.dir = refract_ray(P.pos_prev, P.p, ctr - P.p, n1, n2);
         end
         
-        function [P, P2] = spherical_mirror_constraint(P, ctr, r, dt)
+        function [P, P2] = spherical_mirror_constraint(P, ctr, r)
             % Initialize bleed through pulse
-            P2 = []; 
-            reflectivity = 0.9; 
+            reflectivity = 0.99975; 
             
             % Determine if pulse is inside the sphere
-            inside_sphere = sqrt( sum( (P.p - ctr).^2 ) ) < r;  
             
             % Find the intesection point
-            if( inside_sphere ) 
-                dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
-                d = fzero(dtoarc, 0); 
-                % Update Pulse variables bleed through
-                P.pos_prev = P.p; 
-                P.p = P.p + d*P.dir; 
-                P.pow = (1 - reflectivity) * P.pow; 
-                
-                % Update Pulse variables for reflection
-                new_dir = reflect_ray(P.pos_prev, P.p, ctr - P.p);
-                P2 = PulsePoint(P.p, new_dir); 
-                P2.pow = (reflectivity) * P.pow;   
-            end
-        end
+            dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
+            d = fzero(dtoarc, 0); 
+            % Update Pulse variables bleed through
+            P.pos_prev = P.p; 
+            P.p = P.p + d*P.dir; 
+            P.pow = (1 - reflectivity) * P.pow; 
+
+            % Update Pulse variables for reflection
+            new_dir = reflect_ray(P.pos_prev, P.p, ctr - P.p);
+            P2 = PulsePoint(P.p, new_dir); 
+            P2.pow = (reflectivity) * P.pow;   
+    end
     end
 end
