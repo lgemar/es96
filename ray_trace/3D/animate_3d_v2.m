@@ -55,8 +55,8 @@ camlight headlight;
 
 
 %% Pulse particle Test
-p0 = [-(distance_harriet + 1) 0.8 0.8]'; 
-dir_initial = [1 -0.1 -0.05]'; 
+p0 = [-(distance_harriet + 1) 1 0.5]'; 
+dir_initial = [1 -0.01 5*-0.01]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
 P_cavity = []; 
