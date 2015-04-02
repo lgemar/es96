@@ -17,44 +17,55 @@ hold on
 % 4) Adjust parameters for Harriet cell and input beam (**p0** and
 % **dir_initial** are the initial position and direction of the laser beam)
 % - Sophie
-%% Set all parameters and draw mirrors
+%% Set all parameters and draw mirrors, lenses, and detectors
 
 model_3d = figure(1); 
 hold on
 
-r = 1.5; % lens radius (in)
-R = 30; % radius of curvature of the lens (in)
-R1 = 15; % Lens radii (1) 
-R2 = 15; % Lens radii (2)
-w = 0.2; % thickness at center (in)
-l = 15.685; % cavity length (in)
-l1 = l+1; % position of collection lens, inch past second ICOS mirror
-lf = l1 + 2*r; % d/f = 1
-distance_harriet = 9.84 % distance between Harriet mirror and 1st ICOS mirror
-
-% make and draw two mirrors in cavity
-mirror3d(0, 0, 1, w, r, R); 
-mirror3d(l, 0, -1, w, r, R);
-mirror3d(-distance_harriet, 0, -1, w, r, R); 
-
-% Draw the lense after the cavity
-lense3d( l1, 0, r, 3*r);
-
-% Draw the cube 
-cube3d([l1 + 2*r, -0.5, -0.5], 1)
+% SPECIFICATIONS
+    % mirror specs
+    r = 1.5; % radius of mirror and lens (in)
+    R = 30; % radius of curvature of the mirrors (in)
+    w = 0.2; % thickness at center (in)
+    l = 15.685; % cavity length (in)
+    distance_harriet = 9.84; % distance between Harriet mirror and 1st ICOS mirror
+    % lens specs
+    R_CX = 3.15441; % Lens radii (1) CX
+    R_CC = 11.7431; % Lens radii (2) CC
+    ct = .354331; % center thickness of lens
+    l1 = l+1; % position of collection lens, inch past second ICOS mirror
+    lf = l1 + 3.0; % focus length where d/f = 1
+    % detector spec
+    d = .0787402; % size of detector 2mm X 2mm
+    HACK = 1.55; %%%%%%%%%% 
     
-L = lens([l1, 0, 0], 0.2, r, R1, R2, ray([l1, 0, 0], [1 0 0]));
-
+% DRAW THINGS
+    % draw two mirrors in cavity
+    mirror3d(0, 0, 1, w, r, R); 
+    mirror3d(l, 0, -1, w, r, R);
+    % draw Harriet mirror 'before' the two mirrors
+    mirror3d(-distance_harriet, 0, -1, w, r, R); 
+    % draw the lense 'after' the cavity
+    lense3d(l1, 0, r, R_CX, R_CC, ct);
+    % draw the cube for the detector
+    cube3d([lf - HACK, -d/2, -d/2], d)
+    
 % Make it look pretty
-set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
-set(gca,'visible','off');
-set(gcf,'color',[.75 .75 1]);
-camlight left;
-camlight right;
-camlight headlight;
+    set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+    %set(gca,'visible','off');
+    set(gcf,'color',[.75 .75 1]);
+    camlight left;
+    camlight right;
+    camlight headlight;
+
+% MAKE OBJECTS
+    L = lens(l1, ct, r, R_CX, R_CC, ray([l1, 0, 0], [1 0 0]));
+
+
 
 
 %% Pulse particle Test
+
 p0 = [-(distance_harriet + 1) 1 0.5]'; 
 dir_initial = [1 -0.01 5*-0.01]'; 
 dt = 0.1; 
@@ -71,13 +82,9 @@ ctr1 = [l 0 0]' - r * [1 0 0]';
 ctr2 = [0 0 0]' + r * [1 0 0]';
 ctr_harriet = [-distance_harriet 0 0]' + r_harriet * [1 0 0]'; 
 
-% Lens radii of curvature
-lens_r1 = 10; 
-lens_r2 = 300; 
-
 % Calculate the centers of curvature for the lens
-lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]'; 
-lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
+lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]'; 
+lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
 
 N = 10; % number of frame updates
@@ -144,15 +151,15 @@ for i = 1:N
     P_cavity = P3; 
     
     % Intersect the ray with the first surface of the lens
-    P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
+    P = P.lens_constraint(lens_ctr1, R_CX, 1, 5); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the lens
-    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+    P = P.lens_constraint(lens_ctr2, R_CC, 5, 1); 
     P.draw(); 
 
     % Intersect the ray with the plane of the detector
-    [P, ~] = P.vertical_plane_constraint(l1 + 4);
+    [P, ~] = P.vertical_plane_constraint(lf-HACK);
     P.draw(); 
     
     % Keep track of power at the detector
