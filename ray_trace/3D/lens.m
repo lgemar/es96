@@ -1,45 +1,41 @@
 classdef lens
   properties
-    w % width at center
+    ct % center thickness
     r % radius
-    R1 % radius of curvature 1
-    R2 % radius of curvature 2
+    R_CX % radius of curvature 1
+    R_CC % radius of curvature 2
     N % normal ray
-    C % Center of the lens
-    P1 % (x,y,z) coordinants of sphere with radius R1
-    P2 % (x,y,z) coordinants of sphere with radius R2
+    x % Center of the lens, x-coordinate
+    P1 % (x,y,z) coordinants of sphere with radius R_CX
+    P2 % (x,y,z) coordinants of sphere with radius R_CC
     F1 % face 1
     F2 % face 2
-    phiR1Max % Maximum phi for sphere with radius R1
-    thetaR1Max % Maximum theta for sphere with radius R1
-    phiR2Max % Maximum phi for sphere with radius R2
-    thetaR2Max % Maximum theta for sphere with radius R2
+    phiR_CXMax % Maximum phi for sphere with radius R_CX
+    thetaR_CXMax % Maximum theta for sphere with radius R_CX
+    phiR_CCMax % Maximum phi for sphere with radius R_CC
+    thetaR_CCMax % Maximum theta for sphere with radius R_CC
     color
   end
   methods
-    function L = lens(C, w, r, R1, R2, N)
-      % L = lens(w, r, R1, R2, N);
-      L.w = w;
+    function L = lens(x, ct, r, R_CX, R_CC, N)
+      % L = lens(w, r, R_CX, R_CC, N);
+      L.ct = ct;
       L.r = r;
-      L.R1 = R1;
-      L.R2 = R2;
+      L.R_CX = R_CX;
+      L.R_CC = R_CC;
       L.N = N;
       L.color = [.5 .5 1];
-      L.C = C;
+      L.x = x;
       L.P1 = [0 0 0];
       L.P2 = [0 0 0];
-      L.P1(1) = L.C(1) - sqrt((L.R1-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R1)^2 + L.C(2)^2*((L.R1-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R1)^2)/(L.R1^2 + L.C(3)^2));
-      L.P2(1) = L.C(1) + sqrt((L.R2-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R2)^2 + L.C(2)^2*((L.R2-(w/2))^2 - L.C(3)^2*(1-(w/2)*L.R2)^2)/(L.R2^2 + L.C(3)^2));
+      L.P1(1) = L.x - sqrt((L.R_CX-(ct/2))^2 / L.R_CX^2 );
+      L.P2(1) = L.x + sqrt((L.R_CC-(ct/2))^2 / L.R_CC^2 );
        
-      R.phiR1Max = acos(L.r/L.R1);
-      R.thetaR1Max = asin(L.r/L.R1);
+      R.phiR_CXMax = acos(L.r/L.R_CX);
+      R.thetaR_CXMax = asin(L.r/L.R_CX);
      
-      R.phiR2Max = acos(L.r/L.R2);
-      R.thetaR2Max = asin(L.r/L.R2);
-      
-      
-      
-      
+      R.phiR_CCMax = acos(L.r/L.R_CC);
+      R.thetaR_CCMax = asin(L.r/L.R_CC);
     
     end
   end

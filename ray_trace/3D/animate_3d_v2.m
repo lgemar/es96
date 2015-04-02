@@ -43,20 +43,20 @@ hold on
     % draw Harriet mirror 'before' the two mirrors
     mirror3d(-distance_harriet, 0, -1, w, r, R); 
     % draw the lense 'after' the cavity
-    lense3d(l1, 0, r, R_CX, R_CC);
+    lense3d(l1, 0, r, R_CX, R_CC, ct);
     % draw the cube for the detector
-    cube3d([l1 + 2*r, -0.5, -0.5], 1)
+    cube3d([lf, -0.5, -0.5], 1)
     
 % Make it look pretty
     set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
-    set(gca,'visible','off');
+    %set(gca,'visible','off');
     set(gcf,'color',[.75 .75 1]);
     camlight left;
     camlight right;
     camlight headlight;
 
 % MAKE OBJECTS
-    L = lens([l1, 0, 0], 0.2, r, R_CX, R_CC, ray([l1, 0, 0], [1 0 0]));
+    L = lens(l1, ct, r, R_CX, R_CC, ray([l1, 0, 0], [1 0 0]));
 
 
 
@@ -79,13 +79,9 @@ ctr1 = [l 0 0]' - r * [1 0 0]';
 ctr2 = [0 0 0]' + r * [1 0 0]';
 ctr_harriet = [-distance_harriet 0 0]' + r_harriet * [1 0 0]'; 
 
-% Lens radii of curvature
-lens_r1 = 10; 
-lens_r2 = 300; 
-
 % Calculate the centers of curvature for the lens
-lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]'; 
-lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
+lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]'; 
+lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
 
 N = 500; % number of frame updates
@@ -151,15 +147,15 @@ for i = 1:N
     P_cavity = P3; 
     
     % Intersect the ray with the first surface of the lens
-    P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
+    P = P.lens_constraint(lens_ctr1, R_CX, 1, 5); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the lens
-    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+    P = P.lens_constraint(lens_ctr2, R_CC, 5, 1); 
     P.draw(); 
 
     % Intersect the ray with the plane of the detector
-    [P, ~] = P.vertical_plane_constraint(l1 + 4);
+    [P, ~] = P.vertical_plane_constraint(lf);
     P.draw(); 
 
     % Record detector spot pattern

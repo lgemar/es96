@@ -1,4 +1,4 @@
-function h = cube3d(v0,l);
+function h = cube3d(v0,l)
 % cube3d(v0,l);
 % Draws a cube with one vertex at (x0,y0,z0) and
 % sides of length l.

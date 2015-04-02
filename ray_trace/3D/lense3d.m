@@ -1,4 +1,4 @@
-function lense3d( x, y, r, R_CX, R_CC)
+function lense3d( x, y, r, R_CX, R_CC, ct)
 % r is the radius of the lense.
 % R_CX and R_CC are the radi of curvature, convex and concave
 N = 15;
