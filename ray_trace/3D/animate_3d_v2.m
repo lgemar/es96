@@ -80,7 +80,7 @@ lens_ctr1 = [l+1 0 0]' + lens_r1 * [1 0 0]';
 lens_ctr2 = [l+1.5 0 0]' + lens_r2 * [1 0 0]'; 
 
 
-N = 500; % number of frame updates
+N = 10; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
@@ -97,6 +97,7 @@ c = linspace(1,10,numbruns);
 % Inner loop updates each individual pulse
 counter = 0; 
 P_cavity = [];
+detector_power = 0;
 for i = 1:N   
     % Take a care of all of the cavity pulses
     % Reflect the incoming ray off the back face of the ICOS mirror
@@ -153,7 +154,10 @@ for i = 1:N
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
     P.draw(); 
-
+    
+    % Keep track of power at the detector
+    detector_power = detector_power + P.pow;
+    
     % Record detector spot pattern
     detector_spots(index,1) = P.p(2);
     detector_spots(index,2) = P.p(3);
