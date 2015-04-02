@@ -35,7 +35,10 @@ hold on
     ct = .354331; % center thickness of lens
     l1 = l+1; % position of collection lens, inch past second ICOS mirror
     lf = l1 + 3.0; % focus length where d/f = 1
-
+    % detector spec
+    d = .0787402; % size of detector 2mm X 2mm
+    HACK = 1.55; %%%%%%%%%% 
+    
 % DRAW THINGS
     % draw two mirrors in cavity
     mirror3d(0, 0, 1, w, r, R); 
@@ -45,7 +48,7 @@ hold on
     % draw the lense 'after' the cavity
     lense3d(l1, 0, r, R_CX, R_CC, ct);
     % draw the cube for the detector
-    cube3d([lf, -0.5, -0.5], 1)
+    cube3d([lf - HACK, -d/2, -d/2], d)
     
 % Make it look pretty
     set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
@@ -155,7 +158,7 @@ for i = 1:N
     P.draw(); 
 
     % Intersect the ray with the plane of the detector
-    [P, ~] = P.vertical_plane_constraint(lf);
+    [P, ~] = P.vertical_plane_constraint(lf-HACK);
     P.draw(); 
 
     % Record detector spot pattern
