@@ -37,7 +37,6 @@ hold on
     lf = l1 + 3.0; % focus length where d/f = 1
     % detector spec
     d = .0787402; % size of detector 2mm X 2mm
-    HACK = 1.55; %%%%%%%%%% 
     
 % DRAW THINGS
     % draw two mirrors in cavity
@@ -48,7 +47,7 @@ hold on
     % draw the lense 'after' the cavity
     lense3d(l1, 0, r, R_CX, R_CC, ct);
     % draw the cube for the detector
-    cube3d([lf - HACK, -d/2, -d/2], d)
+    cube3d([lf, -d/2, -d/2], d)
     
 % Make it look pretty
     set(gca,'xlim', [-(distance_harriet+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
@@ -57,9 +56,6 @@ hold on
     camlight left;
     camlight right;
     camlight headlight;
-
-% MAKE OBJECTS
-    L = lens(l1, ct, r, R_CX, R_CC, ray([l1, 0, 0], [1 0 0]));
 
 
 
@@ -70,8 +66,6 @@ p0 = [-(distance_harriet + 1) 1 0.5]';
 dir_initial = [1 -0.01 5*-0.01]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
-P_cavity = []; 
-
 
 % Radius of curvature of the ICOS mirrors
 r = 39.37; 
@@ -87,7 +81,7 @@ lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]';
 lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
 
-N = 500; % number of frame updates
+N = 100; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
@@ -151,15 +145,15 @@ for i = 1:N
     P_cavity = P3; 
     
     % Intersect the ray with the first surface of the lens
-    P = P.lens_constraint(lens_ctr1, R_CX, 1, 5); 
+    P = P.lens_constraint(lens_ctr1, R_CX, 1, 2.75); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the lens
-    P = P.lens_constraint(lens_ctr2, R_CC, 5, 1); 
+    P = P.lens_constraint(lens_ctr2, R_CC, 2.75, 1); 
     P.draw(); 
 
     % Intersect the ray with the plane of the detector
-    [P, ~] = P.vertical_plane_constraint(lf-HACK);
+    [P, ~] = P.vertical_plane_constraint(lf);
     P.draw(); 
     
     % Keep track of power at the detector

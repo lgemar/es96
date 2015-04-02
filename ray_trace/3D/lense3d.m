@@ -8,9 +8,11 @@ a = [0:N N-1:-1:0]'/N;
 dx = [ ones(1,N+1) (-ones(1,N)) ]';
 X1 = x - dx(1:N+1) .* (sqrt(R_CX^2-a(1:N+1).^2*r^2) - sqrt(R_CX^2-r^2));
 X2 = x + dx(N+2:end) .* (sqrt(R_CC^2-a(N+2:end).^2*r^2) - sqrt(R_CC^2-r^2));
-curr_width = X2(end) - X1(1);
-X2 = X2 + ct - curr_width; % difference between what width should be
+% curr_width = X2(end) - X1(1);
+% X2 = X2 + ct - curr_width; % difference between what width should be
+displacement = (x - ct/2) - X1(1);
 X = [X1;X2];
+X = X + displacement;
 
 a = [0:N N-1:-1:0]'/N;
 th = (0:Nr)*2*pi/Nr;
