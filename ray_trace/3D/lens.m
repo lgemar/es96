@@ -5,7 +5,7 @@ classdef lens
     R_CX % radius of curvature 1
     R_CC % radius of curvature 2
     N % normal ray
-    x % Center of the lens, x-coordinate
+    x % Center of the FIRST FACE of lens, x-coordinate
     P1 % (x,y,z) coordinants of sphere with radius R_CX
     P2 % (x,y,z) coordinants of sphere with radius R_CC
     F1 % face 1
@@ -28,8 +28,8 @@ classdef lens
       L.x = x;
       L.P1 = [0 0 0];
       L.P2 = [0 0 0];
-      L.P1(1) = L.x - sqrt((L.R_CX-(ct/2))^2 / L.R_CX^2 );
-      L.P2(1) = L.x + sqrt((L.R_CC-(ct/2))^2 / L.R_CC^2 );
+      L.P1(1) = L.x;
+      L.P2(1) = L.x + sqrt((L.R_CC-L.ct)^2 / L.R_CC^2 );
        
       R.phiR_CXMax = acos(L.r/L.R_CX);
       R.thetaR_CXMax = asin(L.r/L.R_CX);

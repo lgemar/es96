@@ -18,7 +18,6 @@ Y = y+a*r*cos(th);
 Z = a*r*sin(th);
 X = X * ones(size(th));
 surfl(X',Y',Z','light');
-%axis equal;
 colormap copper;
 shading flat;
 set(gca,'dataaspectratio',[1 1 1]);

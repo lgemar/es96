@@ -87,7 +87,7 @@ lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]';
 lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
 
-N = 10; % number of frame updates
+N = 500; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
@@ -121,7 +121,7 @@ for i = 1:N
 
     index = counter+1;
 
-    % Extend the pulse to the second lens and create bleedthrough
+    % Extend the pulse to the second mirror and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
     figure(model_3d)
     P.draw(); 
