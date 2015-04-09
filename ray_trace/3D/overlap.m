@@ -1,5 +1,5 @@
 function area = overlap(d)  
-r = 0.059; 
+r = cm2in(0.02); 
 if( d > 2 * r )
     area = 0; 
 else
