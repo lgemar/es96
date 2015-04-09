@@ -108,6 +108,9 @@ open(writerObj);
 decay_constant = 0.1; 
 slow_down = exp(-decay_constant * (1:N)); 
 
+% implementing a power metric, initialize to 100%
+power = 100;
+
 
 for i = 1:N   
     figure(model_3d)
@@ -117,7 +120,13 @@ for i = 1:N
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
         P_cavity.draw(); 
+        
+        % loses 99.975% going through first ICOS Mirror
+        power = 0.025;
     end
+    
+    % update power metric
+    power = .99975*power;
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
     %P_harriet.draw(); 
