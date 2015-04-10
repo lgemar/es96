@@ -126,7 +126,7 @@ for i = 1:N
     end
     
     % update power metric
-    power = .99975*power + power;
+    power = (0.025)*(0.99975^(2*i)) + power
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
     %P_harriet.draw(); 
@@ -181,13 +181,13 @@ for i = 1:N
     detector_spots(i,1) = P.p(2);
     detector_spots(i,2) = P.p(3);
 
-    drawnow;    
+    %**drawnow;    
     % Grab the current frame
-    num_frames = ceil(slow_down(i) * (0.2 *     fps));
-    frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
-    for j = 1:num_frames
-        writeVideo(writerObj, frame);
-    end
+    %**num_frames = ceil(slow_down(i) * (0.2 *     fps));
+    %**frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+    %**for j = 1:num_frames
+    %**    writeVideo(writerObj, frame);
+    %**end
 end
 
 % Save the movie
