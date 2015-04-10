@@ -1,6 +1,3 @@
-%** 4/10/2015 - NOTE: I, JOY, AM COMMENTING OUT DRAWING PORTIONS OF THE
-%CODE AND DISTINGUISHING THESE PORTIONS WITH %** INSTEAD OF JUST %
-
 %% Close all and Clear all
 clear variables
 close all
@@ -11,9 +8,9 @@ hold on
 r = 1.5; % lens radius (in)
 
 % Create the mirror spot pattern figure
-%**figure(1); 
-%**hold on
-%**title('Mirror Spot Projection')
+figure(1); 
+hold on
+title('Mirror Spot Projection')
 xlim([-1.5 1.5]); 
 ylim([-1.5 1.5]);
 thetas = 0:0.01:2*pi; 
@@ -122,7 +119,7 @@ for i = 1:N
     
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
-        %**P_cavity.draw(); 
+        P_cavity.draw(); 
         % loses 99.975% going through first ICOS Mirror
         power = 0.025;
     end
@@ -141,19 +138,19 @@ for i = 1:N
 
     % Extend the pulse to the second lens and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
-    %**P.draw();
+    P.draw();
     
     % Intersect the ray with the first surface of the lens
     P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
-    %**P.draw(); 
+    P.draw(); 
 
     % Intersect the ray with the second surface of the lens
     P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
-    %**P.draw(); 
+    P.draw(); 
 
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
-    %**P.draw(); 
+    P.draw(); 
     
     % Record mirror spot pattern
     % figure(1); 
@@ -168,18 +165,18 @@ for i = 1:N
 %     hold off
 
     % Draw the pulses up until now
-    %**drawnow;  
+    drawnow;  
     
     % Grab the current frame
     num_frames = ceil(slow_down(i) * (fps));
     frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
-    %**for j = 1:num_frames
-    %**    writeVideo(writerObj, frame);
-    %**end
+    for j = 1:num_frames
+        writeVideo(writerObj, frame);
+    end
     
     % Extend the pulse back to the first lens and create bleedthrough
     [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
-    %**P2.draw();       
+    P2.draw();       
 
     P_cavity = P3; 
     
@@ -187,28 +184,28 @@ for i = 1:N
     detector_spots(i,1) = P.p(2);
     detector_spots(i,2) = P.p(3);
     i
-    %**drawnow;    
+    drawnow;    
     % Grab the current frame
-    %**num_frames = ceil(slow_down(i) * (0.2 *     fps));
-    %**frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
-    %**for j = 1:num_frames
-    %**    writeVideo(writerObj, frame);
-    %**end
+    num_frames = ceil(slow_down(i) * (0.2 *     fps));
+    frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+    for j = 1:num_frames
+        writeVideo(writerObj, frame);
+    end
 end
 
 f_ellipse = fit_ellipse(detector_spots(1:N,1), detector_spots(1:N,2));
 eccen = sqrt(1 - ((f_ellipse.short_axis)/(f_ellipse.long_axis)^2));
 
 % Save the movie
-%**hold off
-%**close(writerObj); % Saves the movie.
+hold off
+close(writerObj); % Saves the movie.
 
-%**figure(1)
-%**scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
-%**title('Mirror spot pattern')
+figure(1)
+scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
+title('Mirror spot pattern')
 
-%**detector_spot_pattern = figure(2); 
-%**hold on; 
-%**scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
-%**title('Detector spot pattern')
+detector_spot_pattern = figure(2); 
+hold on; 
+scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
+title('Detector spot pattern')
 
