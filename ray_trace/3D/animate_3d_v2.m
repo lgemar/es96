@@ -153,16 +153,18 @@ for i = 1:N
     P.draw(); 
     
     % Record mirror spot pattern
-    % figure(1); 
-    % mirror_spots(i,1) = P2.p(2);
-    % mirror_spots(i,2) = P2.p(3); 
+    %** the next 10 lines were commented out, but I (Joy) uncommented them
+    %to see what it would do
+     figure(1); 
+     mirror_spots(i,1) = P2.p(2);
+     mirror_spots(i,2) = P2.p(3); 
     
     % Draw the mirror spot pattern
-%     c = linspace(1,10 * (i) / N,i);
-%     scatter(mirror_spots(1:(i),1), mirror_spots(1:(i),2),200, c, '.')
-%     hold on
-%     scatter(mirror_spots(i,1), mirror_spots(i,2),200, 'r+');
-%     hold off
+     c = linspace(1,10 * (i) / N,i);
+     scatter(mirror_spots(1:(i),1), mirror_spots(1:(i),2),200, c, '.')
+     hold on
+     scatter(mirror_spots(i,1), mirror_spots(i,2),200, 'r+');
+     hold off
 
     % Draw the pulses up until now
     drawnow;  
@@ -193,7 +195,8 @@ for i = 1:N
     end
 end
 
-f_ellipse = fit_ellipse(detector_spots(1:N,1), detector_spots(1:N,2));
+% fits ellipse to mirror spots, then calculates eccentricity of circle
+f_ellipse = fit_ellipse(mirror_spots(1:N,1), mirror_spots(1:N,2));
 eccen = sqrt(1 - ((f_ellipse.short_axis)/(f_ellipse.long_axis)^2));
 
 % Save the movie
@@ -204,7 +207,7 @@ figure(1)
 scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 title('Mirror spot pattern')
 
-detector_spot_pattern = figure(2); 
+detector_spot_pattern = figure(3); 
 hold on; 
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
 title('Detector spot pattern')
