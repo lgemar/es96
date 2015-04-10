@@ -11,9 +11,9 @@ hold on
 r = 1.5; % lens radius (in)
 
 % Create the mirror spot pattern figure
-figure(1); 
-hold on
-title('Mirror Spot Projection')
+%**figure(1); 
+%**hold on
+%**title('Mirror Spot Projection')
 xlim([-1.5 1.5]); 
 ylim([-1.5 1.5]);
 thetas = 0:0.01:2*pi; 
@@ -122,17 +122,16 @@ for i = 1:N
     
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
-        P_cavity.draw(); 
-        
+        %**P_cavity.draw(); 
         % loses 99.975% going through first ICOS Mirror
         power = 0.025;
     end
   
     if (i > 1)
         % update power metric
-        power = (0.025)*(0.99975^(2*i)) + power
+        power = (0.025)*(0.99975^(2*i)) + power;
     else
-        power
+        power;
     end
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
