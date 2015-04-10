@@ -1,3 +1,6 @@
+%** 4/10/2015 - NOTE: I, JOY, AM COMMENTING OUT DRAWING PORTIONS OF THE
+%CODE AND DISTINGUISHING THESE PORTIONS WITH %** INSTEAD OF JUST %
+
 %% Close all and Clear all
 clear variables
 close all
@@ -124,9 +127,13 @@ for i = 1:N
         % loses 99.975% going through first ICOS Mirror
         power = 0.025;
     end
-    
-    % update power metric
-    power = (0.025)*(0.99975^(2*i)) + power
+  
+    if (i > 1)
+        % update power metric
+        power = (0.025)*(0.99975^(2*i)) + power
+    else
+        power
+    end
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
     %P_harriet.draw(); 
@@ -135,19 +142,19 @@ for i = 1:N
 
     % Extend the pulse to the second lens and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
-    P.draw();
+    %**P.draw();
     
     % Intersect the ray with the first surface of the lens
     P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
-    P.draw(); 
+    %**P.draw(); 
 
     % Intersect the ray with the second surface of the lens
     P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
-    P.draw(); 
+    %**P.draw(); 
 
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
-    P.draw(); 
+    %**P.draw(); 
     
     % Record mirror spot pattern
     % figure(1); 
@@ -162,18 +169,18 @@ for i = 1:N
 %     hold off
 
     % Draw the pulses up until now
-    drawnow;  
+    %**drawnow;  
     
     % Grab the current frame
     num_frames = ceil(slow_down(i) * (fps));
     frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
-    for j = 1:num_frames
-        writeVideo(writerObj, frame);
-    end
+    %**for j = 1:num_frames
+    %**    writeVideo(writerObj, frame);
+    %**end
     
     % Extend the pulse back to the first lens and create bleedthrough
     [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
-    P2.draw();       
+    %**P2.draw();       
 
     P_cavity = P3; 
     
@@ -191,15 +198,15 @@ for i = 1:N
 end
 
 % Save the movie
-hold off
-close(writerObj); % Saves the movie.
+%**hold off
+%**close(writerObj); % Saves the movie.
 
-figure(1)
-scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
-title('Mirror spot pattern')
+%**figure(1)
+%**scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
+%**title('Mirror spot pattern')
 
-detector_spot_pattern = figure(2); 
-hold on; 
-scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
-title('Detector spot pattern')
+%**detector_spot_pattern = figure(2); 
+%**hold on; 
+%**scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
+%**title('Detector spot pattern')
 
