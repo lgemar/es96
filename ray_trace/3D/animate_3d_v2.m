@@ -126,7 +126,7 @@ for i = 1:N
     end
     
     % update power metric
-    power = .99975*power;
+    power = .99975*power + power;
     
     % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
     %P_harriet.draw(); 
