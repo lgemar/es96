@@ -186,7 +186,7 @@ for i = 1:N
     % Record detector spot pattern
     detector_spots(i,1) = P.p(2);
     detector_spots(i,2) = P.p(3);
-
+    i
     %**drawnow;    
     % Grab the current frame
     %**num_frames = ceil(slow_down(i) * (0.2 *     fps));
@@ -195,6 +195,9 @@ for i = 1:N
     %**    writeVideo(writerObj, frame);
     %**end
 end
+
+f_ellipse = fit_ellipse(detector_spots(1:N,1), detector_spots(1:N,2));
+eccen = sqrt(1 - ((f_ellipse.short_axis)/(f_ellipse.long_axis)^2));
 
 % Save the movie
 %**hold off
