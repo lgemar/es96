@@ -126,7 +126,7 @@ for i = 1:N
   
     if (i > 1)
         % update power metric
-        power = (0.025)*(0.99975^(2*i)) + power;
+        power = (0.5)*(0.025)*(0.99975^(2*i)) + power;
     else
         power;
     end
