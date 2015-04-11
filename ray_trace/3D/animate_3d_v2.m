@@ -112,6 +112,9 @@ open(writerObj);
 decay_constant = 0.1; 
 slow_down = exp(-decay_constant * (1:N)); 
 
+% implementing a power metric, initialize to 100%
+power = 100;
+
 
 for i = 1:N   
     figure(model_3d)
@@ -122,7 +125,14 @@ for i = 1:N
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
         P_cavity.draw(); 
         % loses 99.975% going through first ICOS Mirror
-        power = .025;
+        power = 0.025;
+    end
+  
+    if (i > 1)
+        % update power metric
+        power = (0.5)*(0.025)*(0.99975^(2*i)) + power;
+    else
+        power;
     end
     
     if (i > 1)
@@ -181,7 +191,7 @@ for i = 1:N
     % Record detector spot pattern
     detector_spots(i,1) = P.p(2);
     detector_spots(i,2) = P.p(3);
-
+    i
     drawnow;    
     % Grab the current frame
     num_frames = ceil(slow_down(i) * (0.2 *     fps));
@@ -191,7 +201,7 @@ for i = 1:N
     end
 end
 
-% fits ellipses to mirror spots, then calculates eccentricity of circle
+% fits ellipse to mirror spots, then calculates eccentricity of circle
 f_ellipse = fit_ellipse(mirror_spots(1:N,1), mirror_spots(1:N,2));
 eccen = sqrt(1 - ((f_ellipse.short_axis)/(f_ellipse.long_axis)^2));
 
@@ -203,7 +213,7 @@ figure(1)
 scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 title('Mirror spot pattern')
 
-detector_spot_pattern = figure(2); 
+detector_spot_pattern = figure(3); 
 hold on; 
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
 title('Detector spot pattern')
