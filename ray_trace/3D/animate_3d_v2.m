@@ -3,23 +3,22 @@ clear variables
 close all
 hold on
 
-% Questions for Harriet cell
-% 1) how is power effected by the radius of curvature of the harriet cell
-% mirror? What is the maximum power we can achieve? 
-% 2) What is the angle of incidence for the incoming beam? 
-% 3) What is the "best" diameter of the Harriet cell
-% 
-% What do we need for this to happen? 
-% 1) Insert correct values for ICOS mirrors (in) - Sophie
-% 2) Add in power losses at each surface (in PulsePoint) - Sophie, and
-% Lukas will check 
-% 3) (Insert correct values for the Lens) - Lukas
-% 4) Adjust parameters for Harriet cell and input beam (**p0** and
-% **dir_initial** are the initial position and direction of the laser beam)
-% - Sophie
 %% Set all parameters and draw mirrors, lenses, and detectors
 
-model_3d = figure(1); 
+r = 1.5; % lens radius (in)
+
+% Create the mirror spot pattern figure
+figure(1); 
+hold on
+title('Mirror Spot Projection')
+xlim([-1.5 1.5]); 
+ylim([-1.5 1.5]);
+thetas = 0:0.01:2*pi; 
+x_bound = r * sin(thetas); 
+y_bound = r * cos(thetas); 
+scatter(x_bound, y_bound, 'k')
+
+model_3d = figure('units','pixels','position',[0 0 1280 720]); 
 hold on
 
 % SPECIFICATIONS
@@ -27,14 +26,14 @@ hold on
     r = 1.5; % radius of mirror and lens (in)
     R = 30; % radius of curvature of the mirrors (in)
     w = 0.2; % thickness at center (in)
-    l = 15.685; % cavity length (in)
+    l = cm2in(50); % cavity length (in)
     distance_harriet = 9.84; % distance between Harriet mirror and 1st ICOS mirror
     % lens specs
-    R_CX = 3.15441; % Lens radii (1) CX
-    R_CC = 11.7431; % Lens radii (2) CC
-    ct = .354331; % center thickness of lens
-    l1 = l+1; % position of collection lens, inch past second ICOS mirror
-    lf = l1 + 3.0; % focus length where d/f = 1
+    R_CX = cm2in(80.122); % Lens radii (1) CX
+    R_CC = cm2in(298.275); % Lens radii (2) CC
+    ct = cm2in(9); % center thickness of lens
+    l1 = l+1.4; % position of collection lens, 1.4 inch past second ICOS mirror
+    lf = l1 + 2*r; % focus length where d/f = 1
     % detector spec
     d = .0787402; % size of detector 2mm X 2mm
     
@@ -63,12 +62,12 @@ hold on
 %% Pulse particle Test
 
 p0 = [-(distance_harriet + 1) 1 0.5]'; 
-dir_initial = [1 -0.01 5*-0.01]'; 
+dir_initial = [1 -0.005 7*-0.005]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
 
 % Radius of curvature of the ICOS mirrors
-r = 39.37; 
+r = cm2in(75); 
 r_harriet = 39.37; %19.685; 
 
 % Calculate the locations of the centers of the ICOS mirrors
@@ -96,53 +95,48 @@ c = linspace(1,10,numbruns);
 % 2) Plotting points on mirror in 2D 
 % Outer loop is the number of frame updates
 % Inner loop updates each individual pulse
-counter = 0; 
 P_cavity = [];
-detector_power = 0;
+
+% Set up the movie capture
+% Set up the movie.
+Az = -45; 
+El = 26; 
+view([Az El]); 
+zoom(2)
+writerObj = VideoWriter('out.avi'); % Name it.
+fps = 60; 
+writerObj.FrameRate = fps; % How many frames per second.
+open(writerObj);
+
+% Set up the frame slow down vector
+decay_constant = 0.1; 
+slow_down = exp(-decay_constant * (1:N)); 
+
+
 for i = 1:N   
-    % Take a care of all of the cavity pulses
+    figure(model_3d)
+ 
     % Reflect the incoming ray off the back face of the ICOS mirror
     
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
         P_cavity.draw(); 
+        % loses 99.975% going through first ICOS Mirror
+        power = .025;
     end
     
-    % [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet, dt);
-    %P_harriet.draw(); 
+    if (i > 1)
+        % update power metric
+        power = (.05)*(.025)*(0.99975^(2*i)) + power;
+    else
+        power;
+    end
         
     P = P_cavity; 
 
-    index = counter+1;
-
-    % Extend the pulse to the second mirror and create bleedthrough
+    % Extend the pulse to the second lens and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
-    figure(model_3d)
-    P.draw(); 
-
-    % Record mirror spot pattern
-    mirror_spots(index,1) = P2.p(2);
-    mirror_spots(index,2) = P2.p(3);
-    if index > 30
-        spot_points = mirror_spots((index-30):(index-1),:);
-        yn_zn = repmat([P2.p(2), P2.p(3)], 30, 1); 
-    else 
-        spot_points = mirror_spots(1:(index-1), :); 
-        yn_zn = repmat([P2.p(2), P2.p(3)], (index-1), 1); 
-    end
-    temp = spot_points - yn_zn;
-    temp_square = temp.^2;
-    d_2 = temp_square*[1;1];
-    d = sqrt(d_2);
-    areas = arrayfun(@overlap,d(1:min(index-1, 30))); 
-    % disp([d, areas]); 
-    overall_area(i) = sum(areas);
-
-    % Extend the pulse back to the first lens and create bleedthrough
-    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
-    P2.draw();       
-
-    P_cavity = P3; 
+    P.draw();
     
     % Intersect the ray with the first surface of the lens
     P = P.lens_constraint(lens_ctr1, R_CX, 1, 2.75); 
@@ -156,31 +150,61 @@ for i = 1:N
     [P, ~] = P.vertical_plane_constraint(lf);
     P.draw(); 
     
-    % Keep track of power at the detector
-    detector_power = detector_power + P.pow;
+    % Record mirror spot pattern
+    figure(1); 
+    mirror_spots(i,1) = P2.p(2);
+    mirror_spots(i,2) = P2.p(3); 
+    
+    % Draw the mirror spot pattern
+    c = linspace(1,10 * (i) / N,i);
+    scatter(mirror_spots(1:(i),1), mirror_spots(1:(i),2),200, c, '.')
+    hold on
+    scatter(mirror_spots(i,1), mirror_spots(i,2),200, 'r+');
+    hold off
+
+    % Draw the pulses up until now
+    drawnow;  
+    
+    % Grab the current frame
+    num_frames = ceil(slow_down(i) * (fps));
+    frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+    for j = 1:num_frames
+        writeVideo(writerObj, frame);
+    end
+    
+    % Extend the pulse back to the first lens and create bleedthrough
+    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
+    P2.draw();       
+
+    P_cavity = P3; 
     
     % Record detector spot pattern
-    detector_spots(index,1) = P.p(2);
-    detector_spots(index,2) = P.p(3);
+    detector_spots(i,1) = P.p(2);
+    detector_spots(i,2) = P.p(3);
 
-    % Update the cavity pulse ray
-    counter = counter + 1; 
-
-    drawnow;
+    drawnow;    
+    % Grab the current frame
+    num_frames = ceil(slow_down(i) * (0.2 *     fps));
+    frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+    for j = 1:num_frames
+        writeVideo(writerObj, frame);
+    end
 end
 
-mirror_spot_pattern = figure(2); 
-hold on; 
+% fits ellipses to mirror spots, then calculates eccentricity of circle
+f_ellipse = fit_ellipse(mirror_spots(1:N,1), mirror_spots(1:N,2));
+eccen = sqrt(1 - ((f_ellipse.short_axis)/(f_ellipse.long_axis)^2));
+
+% Save the movie
+hold off
+close(writerObj); % Saves the movie.
+
+figure(1)
+scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
 title('Mirror spot pattern')
 
-detector_spot_pattern = figure(3); 
+detector_spot_pattern = figure(2); 
 hold on; 
+scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
 title('Detector spot pattern')
 
-% plot mirror spot pattern 
-figure(mirror_spot_pattern)
-scatter(mirror_spots(:,1), mirror_spots(:,2),[], c, '.')
-
-% plot detector spot pattern
-figure(detector_spot_pattern)
-scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')

@@ -8,6 +8,8 @@ K = 30; % the number of relevant rays for overlap caculations
 penalty = 0; % The penalty term that results from shooting a ray out of the cavity
 infinity = 1; % The maximum penalty
 
+spot_size = cm2in(0.02); % in
+
 % Calculate the locations of the centers of the ICOS mirrors, using the
 % length of the cavity, l, and the radius of curvature of the lenses, r
 ctr1 = [l 0 0]' - r * [1 0 0]'; 
