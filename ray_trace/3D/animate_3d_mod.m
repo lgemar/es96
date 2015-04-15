@@ -29,6 +29,7 @@ field8 = 'num_ICOS_rays'; value8 = 30;
 field9 = 'num_Herriott_rays'; value9 = 10;
 field10 = 'animate_draw'; value10 = false;
 field11 = 'ICOS_specs'; value11 = ICOS_struct;
+% field12 = 'lens4_specs'; values12 = lens4_struct;
 
 parameter_struct = struct(field1, value1, field2, value2, field3, ...
     value3, field4, value4, field5, value5, field6, value6, ...
