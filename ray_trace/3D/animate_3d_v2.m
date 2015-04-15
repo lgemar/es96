@@ -28,6 +28,8 @@ hold on
     w = 0.2; % thickness at center (in)
     l = cm2in(50); % cavity length (in)
     distance_harriet = 9.84; % distance between Harriet mirror and 1st ICOS mirror
+    rflct = 0.99975; % reflectivity of the mirror
+    trnsmt = 1 - rflct; % transmittance of the mirror
     % lens specs
     R_CX = cm2in(80.122); % Lens radii (1) CX
     R_CC = cm2in(298.275); % Lens radii (2) CC
@@ -80,7 +82,8 @@ lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]';
 lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
 
-N = 100; % number of frame updates
+%N = 100; % number of frame updates
+N = 30; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
@@ -125,19 +128,12 @@ for i = 1:N
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
         P_cavity.draw(); 
         % loses 99.975% going through first ICOS Mirror
-        power = 0.025;
+        power = power*trnsmt;
     end
   
     if (i > 1)
         % update power metric
-        power = (0.5)*(0.025)*(0.99975^(2*i)) + power;
-    else
-        power;
-    end
-    
-    if (i > 1)
-        % update power metric
-        power = (.05)*(.025)*(0.99975^(2*i)) + power;
+        power = (0.025)*(rflct^(2*i)) + power;
     else
         power;
     end
