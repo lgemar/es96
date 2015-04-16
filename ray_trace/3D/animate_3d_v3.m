@@ -1,3 +1,6 @@
+%** 4/10/2015 - NOTE: I, JOY, AM COMMENTING OUT DRAWING PORTIONS OF THE
+%CODE AND DISTINGUISHING THESE PORTIONS WITH %** INSTEAD OF JUST %
+
 %% Close all and Clear all
 clear variables
 close all
@@ -7,6 +10,7 @@ hold on
 
 r = 1.5; % lens radius (in)
 
+<<<<<<< HEAD:ray_trace/3D/animate_3d_v3.m
 % Create the mirror spot pattern figure
 figure(1); 
 hold on
@@ -51,6 +55,31 @@ hold on
     % draw the cube for the detector
     cube3d([lf, -d/2, -d/2], d)
     
+=======
+R = 30; % radius of curvature of the lens (in)
+R1 = cm2in(75); % Lens radii (1) 
+R2 = cm2in(75); % Lens radii (2)
+w = 0.2; % thickness at center (in)
+l = cm2in(50); % cavity length (in)
+l1 = l+1.4; % position of collection lens, inch past second ICOS mirror
+lf = l1 + 2*r; % d/f = 1
+distance_harriet = 9.84; % distance between Harriet mirror and 1st ICOS mirror
+
+% make and draw two mirrors in cavity
+mirror3d(0, 0, 1, w, r, R); 
+mirror3d(l, 0, -1, w, r, R);
+mirror3d(-distance_harriet, 0, -1, w, r, R); 
+
+% Draw the lense after the cavity
+lense3d( l1, 0, r, 3*r);
+
+% Draw the cube 
+cube3d([l1 + 2*r, -0.5, -0.5], 1)
+  
+% Draw the lens
+L = lens([l1, 0, 0], 0.2, r, R1, R2, ray([l1, 0, 0], [1 0 0]));
+
+>>>>>>> simplify:ray_trace/3D/animate_3d_v2.m~
 % Make it look pretty
     set(gca,'xlim', [-(distance_RIM+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
     %set(gca,'visible','off');
@@ -61,17 +90,22 @@ hold on
 
 
 
-
 %% Pulse particle Test
+<<<<<<< HEAD:ray_trace/3D/animate_3d_v3.m
 
 p0 = [-(distance_RIM + 1) 1 0.5]'; 
 dir_initial = [1 -0.005 7*-0.005]'; 
 dt = 0.1; 
 P_init = PulsePoint(p0, dir_initial); 
+=======
+p0 = [-(distance_harriet + 1) 1 0.5]'; % Initial position of ray
+dir_initial = [1 -0.005 7*-0.005]'; % INitial direction of ray
+P_init = PulsePoint(p0, dir_initial); % Initial Pulse
+>>>>>>> simplify:ray_trace/3D/animate_3d_v2.m~
 
 % Radius of curvature of the ICOS mirrors
-r = cm2in(75); 
-r_harriet = 39.37; %19.685; 
+r = cm2in(75); % cm2in is a utility function that converts cm to in
+r_harriet = 39.37; % radius of curvature ; 
 
 % Calculate the locations of the centers of the ICOS mirrors
 ctr1 = [l 0 0]' - r * [1 0 0]'; 
@@ -82,50 +116,26 @@ ctr_harriet = [-distance_RIM 0 0]' + r_harriet * [1 0 0]';
 lens_ctr1 = [l1-ct/2 0 0]' + R_CX * [1 0 0]'; 
 lens_ctr2 = [l1+ct/2 0 0]' + R_CC * [1 0 0]'; 
 
+<<<<<<< HEAD:ray_trace/3D/animate_3d_v3.m
 
 N = 100; % number of frame updates
+=======
+N = 30; % number of frame updates
+>>>>>>> simplify:ray_trace/3D/animate_3d_v2.m~
 
 % preallocate matrices for mirror and detector spot patterns
 numbruns = N;
-mirror_spots = zeros(numbruns, 2);
-detector_spots = zeros(numbruns, 2);
-overall_area = zeros(numbruns, 1);
 
-%color gradient
-c = linspace(1,10,numbruns);
-
-% 1) Think about laser overlap
-% 2) Plotting points on mirror in 2D 
-% Outer loop is the number of frame updates
-% Inner loop updates each individual pulse
-P_cavity = [];
-
-% Set up the movie capture
-% Set up the movie.
-Az = -45; 
-El = 26; 
-view([Az El]); 
-zoom(2)
-writerObj = VideoWriter('out.avi'); % Name it.
-fps = 60; 
-writerObj.FrameRate = fps; % How many frames per second.
-open(writerObj);
-
-% Set up the frame slow down vector
-decay_constant = 0.1; 
-slow_down = exp(-decay_constant * (1:N)); 
-
-% implementing a power metric, initialize to 100%
-power = 100;
-
+P_cavity = []; % This is how you create an empty object
 
 for i = 1:N   
-    figure(model_3d)
- 
     % Reflect the incoming ray off the back face of the ICOS mirror
     
+    % on the first run of the code, intersect the ray with the back surface
+    % of the ICOS mirror
     if i == 1
         [P_cavity, P_harriet] = P_init.vertical_plane_constraint(-w); 
+<<<<<<< HEAD:ray_trace/3D/animate_3d_v3.m
         P_cavity.draw(); 
         % loses 99.975% going through first ICOS Mirror
         power = 0.025;
@@ -144,12 +154,23 @@ for i = 1:N
     else
         power;
     end
+=======
+    end
+  
+    % Intersect the ray with the RIM
+    [P_harriet, P_init] = P_harriet.spherical_mirror_constraint(ctr_harriet, r_harriet);
+    P_harriet.draw(); 
+>>>>>>> simplify:ray_trace/3D/animate_3d_v2.m~
         
     P = P_cavity; 
 
     % Extend the pulse to the second lens and create bleedthrough
     [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
     P.draw();
+    
+    % Extend the pulse back to the first lens and create bleedthrough
+    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
+    P2.draw(); 
     
     % Intersect the ray with the first surface of the lens
     P = P.lens_constraint(lens_ctr1, R_CX, 1, 2.75); 
@@ -160,6 +181,7 @@ for i = 1:N
     P.draw(); 
 
     % Intersect the ray with the plane of the detector
+<<<<<<< HEAD:ray_trace/3D/animate_3d_v3.m
     [P, ~] = P.vertical_plane_constraint(lf);
     P.draw(); 
     
@@ -220,4 +242,15 @@ detector_spot_pattern = figure(3);
 hold on; 
 scatter(detector_spots(:,1), detector_spots(:,2),[], c, '.')
 title('Detector spot pattern')
+=======
+    [P, ~] = P.vertical_plane_constraint(l1 + 4);
+    P.draw();       
+
+    P_cavity = P3; 
+    
+    % Draw the pulses up until now
+    drawnow;  
+end
+
+>>>>>>> simplify:ray_trace/3D/animate_3d_v2.m~
 

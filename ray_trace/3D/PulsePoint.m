@@ -1,6 +1,6 @@
 classdef PulsePoint
     properties
-        p
+        p % position
         pos_prev
         dir
         pow
