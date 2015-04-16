@@ -50,7 +50,7 @@ if (parameter_struct.herriot_imp)
     hfield2 = 'RoC'; hvalue2 = 30; % radius of curvature (in)
     hfield3 = 'ctr_thick'; hvalue3 = 0.2; % thickness at center (in)
     hfield4 = 'mirror_reflect'; hvalue4 = 0.99975; % reflectivity of mirror
-    hfield5 = 'length'; hvalue5 = 9.84; % length of Herriott cell (in?)
+    hfield5 = 'length'; hvalue5 = in2cm(9.84); % length of Herriott cell (in?)
     paramter_struct.herriot_imp = struct(hfield1, hvalue1, hfield2, ...
         hvalue2, hfield3, hvalue3, hfield4, hvalue4, hfield5, hvalue5);
 end
@@ -131,7 +131,10 @@ hold on
     d = .0787402; % size of detector 2mm X 2mm
     
 % DRAW THINGS
+    % mirror3d and cube3d just draws the initial image, but the actual object is not
+    % implemented here
     % draw two mirrors in cavity
+    % lens3d actually interacts
     mirror3d(0, 0, 1, w, r, R); 
     mirror3d(l, 0, -1, w, r, R);
     % draw Harriet mirror 'before' the two mirrors
