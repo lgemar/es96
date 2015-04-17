@@ -58,9 +58,9 @@ dir_initial = [1 -0.005 7*-0.005]'; % INitial direction of ray
 P_init = PulsePoint(p0, dir_initial); % Initial Pulse
 
 % create mirrors
-mirror1 = mirror(0,1,r,R,reflect);
-mirror2 = mirror(l,-1,r,R,reflect);
-RIMirror = mirror(-distance_RIM,1,r,R_RIM,reflect_RIM);
+mirror1 = mirror(0,r,R,reflect);
+mirror2 = mirror(l,r,R,reflect);
+RIMirror = mirror(-distance_RIM,r,R_RIM,reflect_RIM);
 
 % create lenses
 lens1 = lens(l1, r, R_CX, R_CC, ct);
@@ -72,12 +72,6 @@ if third
 end
 
 N = 30; % number of frame updates
-
-% preallocate matrices for mirror and detector spot patterns
-numbruns = N;
-
-% This is how you create an empty object
-P_cavity = []; 
 
 for i = 1:N   
     % Reflect the incoming ray off the back face of the ICOS mirror
