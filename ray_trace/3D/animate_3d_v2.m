@@ -22,6 +22,7 @@ hold on
     R_CX = cm2in(75); % Lens radii (1) 
     R_CC = cm2in(90); % Lens radii (2)
     ct = .2; % center thickness of lens
+    ct2 = .2;
     l2 = lf + .2; % position of second lens
     l3 = l2 + 1; % position of third lens
     
@@ -74,20 +75,6 @@ ctr1 = [l 0 0]' - r * [1 0 0]';
 ctr2 = [0 0 0]' + r * [1 0 0]';
 ctr_RIM = [-distance_RIM 0 0]' + r_RIM * [1 0 0]'; 
 
-% Calculate the centers of curvature for the first lens
-lens1_ctr1 = [l1-ct1/2 0 0]' + R_CX * [1 0 0]'; 
-lens1_ctr2 = [l1+ct1/2 0 0]' + R_CC * [1 0 0]'; 
-% Calculate the centers of curvature for the second lens
-if second
-    lens2_ctr1 = [l2-ct2/2 0 0]' + R_CX * [1 0 0]'; 
-    lens2_ctr2 = [l2+ct2/2 0 0]' + R_CC * [1 0 0]';     
-end
-% Calculate the centers of curvature for the third lens
-if third
-    lens3_ctr1 = [l3-ct3/2 0 0]' + R_CX * [1 0 0]'; 
-    lens3_ctr2 = [l3+ct3/2 0 0]' + R_CC * [1 0 0]';     
-end
-
 N = 30; % number of frame updates
 
 % preallocate matrices for mirror and detector spot patterns
@@ -120,21 +107,21 @@ for i = 1:N
     P2.draw(); 
     
     % Intersect the ray with the first surface of the first lens
-    P = P.lens_constraint(lens1_ctr1, lens_r1, 1, 5); 
+    P = P.lens_constraint(P, lens1.ctr1, lens1.R_CX, 1, 5); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the first lens
-    P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+    P = P.lens_constraint(P, lens1.ctr2, lens1.R_CC, 5, 1); 
     P.draw(); 
     
     if second
         
         % Intersect the ray with the first surface of the second lens
-        P = P.lens_constraint(lens1_ctr1, lens_r1, 1, 5); 
+        P = P.lens_constraint(P, lens2.ctr1, lens2.R_CX, 1, 5); 
         P.draw(); 
  
         % Intersect the ray with the second surface of the second lens
-        P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+        P = P.lens_constraint(P, lens2.ctr2, lens2.R_CC, 5, 1); 
         P.draw();         
         
     end
@@ -142,11 +129,11 @@ for i = 1:N
     if third
         
         % Intersect the ray with the first surface of the third lens
-        P = P.lens_constraint(lens_ctr1, lens_r1, 1, 5); 
+        P = P.lens_constraint(P, lens3.ctr1, lens3.R_CX, 1, 5); 
         P.draw(); 
  
         % Intersect the ray with the second surface of the third lens
-        P = P.lens_constraint(lens_ctr2, lens_r2, 5, 1); 
+        P = P.lens_constraint(P, lens3.ctr2, lens3.R_CC, 5, 1); 
         P.draw();         
         
     end    

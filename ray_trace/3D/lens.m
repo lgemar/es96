@@ -19,8 +19,8 @@ classdef lens
             L.R_CX = R_CX;
             L.R_CC = R_CC;
             L.ct = ct;
-            L.ctr1 = [L.x+R_CX 0 0];
-            L.ctr2 = [L.x+L.ct+R_CC 0 0];
+            L.ctr1 = [L.x+R_CX;0;0];
+            L.ctr2 = [L.x+L.ct+R_CC;0;0];
 
         end
     end
