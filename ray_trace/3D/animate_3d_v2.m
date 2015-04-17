@@ -24,7 +24,7 @@ hold on
     R_CC = cm2in(50); % Lens radii (2)
     ct = .2; % center thickness of lens
     ct2 = .2;
-    l2 = lf + .2; % position of second lens
+    l2 = l1 + 1; % position of second lens
     l3 = l2 + 1; % position of third lens
     
     second = true; % second lens implemented
@@ -37,6 +37,12 @@ mirror3d(-distance_RIM, 0, -1, w, r, R);
 
 % Draw the lense after the cavity
 lens3d( l1, r, R_CX, R_CC, ct)
+if second
+    lens3d( l2, r/2, R_CX, R_CC, ct)
+end
+if third
+    lens3d( l3, r, R_CX, R_CC, ct)
+end
 
 % Draw the cube 
 cube3d([l1 + 2*r, -0.5, -0.5], 1)
@@ -74,7 +80,7 @@ if third
     lens3 = lens(l3, r, R_CX, R_CC, ct);
 end
 
-N = 1; % number of frame updates
+N = 5; % number of frame updates
 
 for i = 1:N   
     % Reflect the incoming ray off the back face of the ICOS mirror
@@ -101,8 +107,10 @@ for i = 1:N
     [P2, P3] = P2.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
     P2.draw(); 
     
+    % ******* FOLLOWING P2 ******** 
+    
     % Intersect the ray with the first surface of the first lens
-    P = P.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
+    P = P2.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the first lens
@@ -110,30 +118,22 @@ for i = 1:N
     P.draw(); 
     
     if second
-        
         % Intersect the ray with the first surface of the second lens
         P = P.lens_constraint(lens2.ctr1, lens2.R_CX, 1, 5); 
         P.draw(); 
- 
         % Intersect the ray with the second surface of the second lens
         P = P.lens_constraint(lens2.ctr2, lens2.R_CC, 5, 1); 
-        P.draw();         
-        
+        P.draw();     
     end
-    
     if third
-        
         % Intersect the ray with the first surface of the third lens
         P = P.lens_constraint(lens3.ctr1, lens3.R_CX, 1, 5); 
         P.draw(); 
- 
         % Intersect the ray with the second surface of the third lens
         P = P.lens_constraint(lens3.ctr2, lens3.R_CC, 5, 1); 
-        P.draw();         
-        
+        P.draw();  
     end    
     
-
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
     P.draw();
@@ -146,6 +146,8 @@ for i = 1:N
         detect_pow = detect_pow + P.pow;
     end
 
+    % ******* FOLLOWING P3 in next loop ******** 
+    
     % Reset the cavity pulse as P3
     P_cavity = P3; 
     
