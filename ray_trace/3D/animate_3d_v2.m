@@ -109,17 +109,17 @@ for i = 1:N1
         P = P_cavity; 
 
         % Extend the pulse to the first mirror and create bleedthrough
-        [P, P2] = P.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+        [P, P_rt] = P.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
         P.draw();
 
         % Extend the pulse back to the second mirror and create bleedthrough
-        [P2, P3] = P2.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
-        P2.draw();
+        [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
+        P_rt.draw();
 
         % ******* FOLLOWING P2 ******** 
 
         % Intersect the ray with the first surface of the first lens
-        P = P2.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
+        P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
         P.draw(); 
 
         % Intersect the ray with the second surface of the first lens
@@ -158,7 +158,7 @@ for i = 1:N1
         % ******* FOLLOWING P3 in next inner loop ******** 
 
         % Reset the cavity pulse as P3
-        P_cavity = P3; 
+        P_cavity = P_left; 
 
         % Draw the pulses up until now
         drawnow;  
