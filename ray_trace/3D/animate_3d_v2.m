@@ -138,7 +138,9 @@ for i = 1:N
     
     % Determine if within angle of +/- 15 degrees
     angle = radtodeg(acos(dot(P.dir,[1;0;0])));
-    if abs(P.p(2))<cm2in(5) && abs(P.p(3))<cm2in(5)
+    P.p
+    P.pow
+    if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
         detect_pow = detect_pow + P.pow;
     end
 
