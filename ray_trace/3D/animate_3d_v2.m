@@ -20,8 +20,8 @@ hold on
     % the lenses
     l1 = l+1.4; % position of first lens, inch past second ICOS mirror
     lf = l1 + 2*r; % d/f = 1
-    R_CX = cm2in(75); % Lens radii (1) 
-    R_CC = cm2in(90); % Lens radii (2)
+    R_CX = cm2in(25); % Lens radii (1) 
+    R_CC = cm2in(50); % Lens radii (2)
     ct = .2; % center thickness of lens
     ct2 = .2;
     l2 = lf + .2; % position of second lens
@@ -56,6 +56,9 @@ camlight headlight;
 p0 = [-(distance_RIM + 1) 1 0.5]'; % Initial position of ray
 dir_initial = [1 -0.005 7*-0.005]'; % INitial direction of ray
 P_init = PulsePoint(p0, dir_initial); % Initial Pulse
+
+% keep track of detector power
+detect_pow = 0;
 
 % create mirrors
 mirror1 = mirror(0,r,R,reflect);
@@ -131,7 +134,13 @@ for i = 1:N
 
     % Intersect the ray with the plane of the detector
     [P, ~] = P.vertical_plane_constraint(l1 + 4);
-    P.draw();       
+    P.draw();
+    
+    % Determine if within angle of +/- 15 degrees
+    angle = radtodeg(acos(dot(P.dir,[1;0;0])));
+    if abs(P.p(2))<cm2in(5) && abs(P.p(3))<cm2in(5)
+        detect_pow = detect_pow + P.pow;
+    end
 
     % Reset the cavity pulse as P3
     P_cavity = P3; 
