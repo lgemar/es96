@@ -22,7 +22,7 @@ hold on
     lf = l1 + 2*r; % d/f = 1
     R_CX = cm2in(25); % Lens radii (1) 
     R_CC = cm2in(50); % Lens radii (2)
-    ct = 2; % center thickness of lens
+    ct = .2; % center thickness of lens
     ct2 = .2;
     l2 = l1 + 4; % position of second lens
     l3 = l2 + 2; % position of third lens
@@ -45,11 +45,11 @@ if second
     lens3d( l2, r/2, R_CX, R_CC, ct2);
 end
 if third
-    lens3d( l3, r, R_CX, R_CC, ct3)
+    lens3d( l3, r, R_CX, R_CC, ct3);
 end
 
 % Draw the cube 
-cube3d([l4, -(size/2), -(size/2)], size)
+cube3d([l4, -(size/2), -(size/2)], size);
   
 % Draw the lens
 L = lens(l1, r, R_CX, R_CC, ct);
@@ -88,35 +88,26 @@ N1 = 5; % number of RIM reflections
 N2 = 10; % number of ICOS reflections
 
 for i = 1:N1 
-    % Reflect the incoming ray off the back face of the ICOS mirror
     
-    % on the first run of the code, intersect the ray with the back surface
-    % of the ICOS mirror
-    if i == 1
-        [P_cavity, P_RIM] = P_init.vertical_plane_constraint(-w); 
-        P_cavity.draw();
-    end
-  
-    % Intersect the ray with the RIM
-    [P_RIM, P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr, RIMirror.R);
-    P_RIM.draw(); 
+    % Extend the pulse to the first mirror and create bleedthrough P_cavity
+    % and reflection P_RIM
+    [P_cavity, P_RIM] = P_init.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+    P_cavity.draw();
     
-    % P_RIM is pulse going left , P_ICOS is pulse going right
-    [P_RIM,P_ICOS] = P_RIM.spherical_mirror_constraint(mirror1.ctr,mirror1.R);
-
+    % P_RIM is pulse going left to RIM, P_init is pulse going right to ICOS
+    % P_init will be used on the next loop as the incoming ray
+    [P_RIM,P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr,RIMirror.R);
+    P_RIM.draw();
+    
     for j = 1:N2
         
-        P = P_cavity; 
-
-        % Extend the pulse to the first mirror and create bleedthrough
-        [P, P_rt] = P.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
-        P.draw();
+        P_rt = P_cavity;
 
         % Extend the pulse back to the second mirror and create bleedthrough
         [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
         P_rt.draw();
 
-        % ******* FOLLOWING P2 ******** 
+        % ******* FOLLOWING P_rt ******** 
 
         % Intersect the ray with the first surface of the first lens
         P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
@@ -149,17 +140,17 @@ for i = 1:N1
 
         % Determine if within angle of +/- 15 degrees
         angle = radtodeg(acos(dot(P.dir,[1;0;0])));
-        P.p
-        P.pow
         if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
             detect_pow = detect_pow + P.pow;
         end
 
-        % ******* FOLLOWING P3 in next inner loop ******** 
+        % ******* FOLLOWING P_left in next inner loop ******** 
 
-        % Reset the cavity pulse as P3
-        P_cavity = P_left; 
-
+        % Extend the pulse to the first mirror and reflect back as P_cavity 
+        % for next loop
+        [P_left, P_cavity] = P_left.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+        P_left.draw();
+        
         % Draw the pulses up until now
         drawnow;  
     end
