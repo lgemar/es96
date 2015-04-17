@@ -24,11 +24,15 @@ hold on
     R_CC = cm2in(50); % Lens radii (2)
     ct = 2; % center thickness of lens
     ct2 = .2;
-    l2 = l1 + 1; % position of second lens
-    l3 = l2 + 1; % position of third lens
+    l2 = l1 + 4; % position of second lens
+    l3 = l2 + 2; % position of third lens
     
     second = true; % second lens implemented
     third = false; % third lense implemented?
+    
+    %the detector
+    l4 = l2 + 1; % position of detector
+    size = cm2in(1); % size of detector
 
 % make and draw two mirrors in cavity
 mirror3d(0, 0, 1, w, r, R); 
@@ -36,22 +40,22 @@ mirror3d(l, 0, -1, w, r, R);
 mirror3d(-distance_RIM, 0, -1, w, r, R); 
 
 % Draw the lense after the cavity
-lens3d( l1, r, R_CX, R_CC, ct)
+lens3d( l1, r, R_CX, R_CC, ct);
 if second
-    lens3d( l2, r/2, R_CX, R_CC, ct)
+    lens3d( l2, r/2, R_CX, R_CC, ct2);
 end
 if third
-    lens3d( l3, r, R_CX, R_CC, ct)
+    lens3d( l3, r, R_CX, R_CC, ct3)
 end
 
 % Draw the cube 
-cube3d([l1 + 2*r, -0.5, -0.5], 1)
+cube3d([l4, -(size/2), -(size/2)], size)
   
 % Draw the lens
 L = lens(l1, r, R_CX, R_CC, ct);
 
 % Make it look pretty
-set(gca,'xlim', [-(distance_RIM+1) lf+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+set(gca,'xlim', [-(distance_RIM+1) l4+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
 camlight left;
@@ -90,7 +94,6 @@ for i = 1:N
     if i == 1
         [P_cavity, P_RIM] = P_init.vertical_plane_constraint(-w); 
         P_cavity.draw();
-        %P_RIM.draw();
     end
   
 %     % Intersect the ray with the RIM
@@ -135,7 +138,7 @@ for i = 1:N
     end    
     
     % Intersect the ray with the plane of the detector
-    [P, ~] = P.vertical_plane_constraint(l1 + 4);
+    [P, ~] = P.vertical_plane_constraint(l4);
     P.draw();
     
     % Determine if within angle of +/- 15 degrees
