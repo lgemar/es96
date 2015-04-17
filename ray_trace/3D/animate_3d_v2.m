@@ -83,13 +83,13 @@ for i = 1:N
     % of the ICOS mirror
     if i == 1
         [P_cavity, P_RIM] = P_init.vertical_plane_constraint(-w); 
-        %P_cavity.draw();
-        P_RIM.draw();
+        P_cavity.draw();
+        %P_RIM.draw();
     end
   
-    % Intersect the ray with the RIM
-    [P_RIM, P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr, RIMirror.R);
-    P_RIM.draw(); 
+%     % Intersect the ray with the RIM
+%     [P_RIM, P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr, RIMirror.R);
+%     P_RIM.draw(); 
         
     P = P_cavity; 
 
