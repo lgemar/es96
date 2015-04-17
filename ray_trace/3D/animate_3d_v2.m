@@ -22,7 +22,7 @@ hold on
     lf = l1 + 2*r; % d/f = 1
     R_CX = cm2in(25); % Lens radii (1) 
     R_CC = cm2in(50); % Lens radii (2)
-    ct = .2; % center thickness of lens
+    ct = 2; % center thickness of lens
     ct2 = .2;
     l2 = l1 + 1; % position of second lens
     l3 = l2 + 1; % position of third lens
