@@ -107,21 +107,21 @@ for i = 1:N
     P2.draw(); 
     
     % Intersect the ray with the first surface of the first lens
-    P = P.lens_constraint(P, lens1.ctr1, lens1.R_CX, 1, 5); 
+    P = P.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
     P.draw(); 
 
     % Intersect the ray with the second surface of the first lens
-    P = P.lens_constraint(P, lens1.ctr2, lens1.R_CC, 5, 1); 
+    P = P.lens_constraint(lens1.ctr2, lens1.R_CC, 5, 1); 
     P.draw(); 
     
     if second
         
         % Intersect the ray with the first surface of the second lens
-        P = P.lens_constraint(P, lens2.ctr1, lens2.R_CX, 1, 5); 
+        P = P.lens_constraint(lens2.ctr1, lens2.R_CX, 1, 5); 
         P.draw(); 
  
         % Intersect the ray with the second surface of the second lens
-        P = P.lens_constraint(P, lens2.ctr2, lens2.R_CC, 5, 1); 
+        P = P.lens_constraint(lens2.ctr2, lens2.R_CC, 5, 1); 
         P.draw();         
         
     end
@@ -129,11 +129,11 @@ for i = 1:N
     if third
         
         % Intersect the ray with the first surface of the third lens
-        P = P.lens_constraint(P, lens3.ctr1, lens3.R_CX, 1, 5); 
+        P = P.lens_constraint(lens3.ctr1, lens3.R_CX, 1, 5); 
         P.draw(); 
  
         % Intersect the ray with the second surface of the third lens
-        P = P.lens_constraint(P, lens3.ctr2, lens3.R_CC, 5, 1); 
+        P = P.lens_constraint(lens3.ctr2, lens3.R_CC, 5, 1); 
         P.draw();         
         
     end    
