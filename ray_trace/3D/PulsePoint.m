@@ -21,13 +21,15 @@ classdef PulsePoint
         end
         
         function [P, P2] = vertical_plane_constraint(P, x_pos)
-            P2 = []; 
             d = x_pos - P.p(1); 
             P.pos_prev = P.p; 
             P.p = P.p + d*P.dir; 
+            P.pow = (1-.99975) * P.pow; % transmitted
+            
+            P2 = []; 
             new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
             P2 = PulsePoint(P.p, new_dir); 
-            P2.pow = 0.99975 * P.pow; % 99.975% reflects back
+            P2.pow = 0.99975 * P.pow; % reflected
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2) 

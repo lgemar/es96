@@ -74,7 +74,7 @@ if third
     lens3 = lens(l3, r, R_CX, R_CC, ct);
 end
 
-N = 30; % number of frame updates
+N = 1; % number of frame updates
 
 for i = 1:N   
     % Reflect the incoming ray off the back face of the ICOS mirror
@@ -83,6 +83,8 @@ for i = 1:N
     % of the ICOS mirror
     if i == 1
         [P_cavity, P_RIM] = P_init.vertical_plane_constraint(-w); 
+        %P_cavity.draw();
+        P_RIM.draw();
     end
   
     % Intersect the ray with the RIM

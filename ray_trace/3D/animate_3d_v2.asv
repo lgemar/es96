@@ -57,6 +57,9 @@ p0 = [-(distance_RIM + 1) 1 0.5]'; % Initial position of ray
 dir_initial = [1 -0.005 7*-0.005]'; % INitial direction of ray
 P_init = PulsePoint(p0, dir_initial); % Initial Pulse
 
+% keep track of detector power
+detect_pow = 0;
+
 % create mirrors
 mirror1 = mirror(0,r,R,reflect);
 mirror2 = mirror(l,r,R,reflect);
@@ -71,7 +74,7 @@ if third
     lens3 = lens(l3, r, R_CX, R_CC, ct);
 end
 
-N = 30; % number of frame updates
+N = 1; % number of frame updates
 
 for i = 1:N   
     % Reflect the incoming ray off the back face of the ICOS mirror
@@ -80,6 +83,7 @@ for i = 1:N
     % of the ICOS mirror
     if i == 1
         [P_cavity, P_RIM] = P_init.vertical_plane_constraint(-w); 
+        P_cavity.draw();
     end
   
     % Intersect the ray with the RIM
@@ -135,7 +139,11 @@ for i = 1:N
     
     % Determine if within angle of +/- 15 degrees
     angle = radtodeg(acos(dot(P.dir,[1;0;0])));
-    if abs(P.p(2))<cm2in(.2)
+    P.p
+    P.pow
+    if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
+        detect_pow = detect_pow + P.pow;
+    end
 
     % Reset the cavity pulse as P3
     P_cavity = P3; 
