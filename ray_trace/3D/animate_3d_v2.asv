@@ -57,10 +57,14 @@ p0 = [-(distance_RIM + 1) 1 0.5]'; % Initial position of ray
 dir_initial = [1 -0.005 7*-0.005]'; % INitial direction of ray
 P_init = PulsePoint(p0, dir_initial); % Initial Pulse
 
+% Radius of curvature of the ICOS mirrors
+r = cm2in(75); % cm2in is a utility function that converts cm to in
+r_RIM = 39.37; % radius of curvature of the RIM; 
+
 % create mirrors
 mirror1 = mirror(0,1,r,R,reflect);
 mirror2 = mirror(l,-1,r,R,reflect);
-RIMirror = mirror(-distance_RIM,1,r,R_RIM,reflect_RIM);
+RIM = mirror(-distance_RIM,1,r,R_RIM,reflect_RIM);
 
 % create lenses
 lens1 = lens(l1, r, R_CX, R_CC, ct);
@@ -70,6 +74,12 @@ end
 if third
     lens3 = lens(l3, r, R_CX, R_CC, ct);
 end
+
+
+% Calculate the locations of the centers of the ICOS mirrors
+ctr1 = [l 0 0]' - r * [1 0 0]'; 
+ctr2 = [0 0 0]' + r * [1 0 0]';
+ctr_RIM = [-distance_RIM 0 0]' + r_RIM * [1 0 0]'; 
 
 N = 30; % number of frame updates
 
@@ -89,17 +99,17 @@ for i = 1:N
     end
   
     % Intersect the ray with the RIM
-    [P_RIM, P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr, RIMirror.R);
+    [P_RIM, P_init] = P_RIM.spherical_mirror_constraint(ctr_RIM, r_RIM);
     P_RIM.draw(); 
         
     P = P_cavity; 
 
     % Extend the pulse to the second mirror and create bleedthrough
-    [P, P2] = P.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+    [P, P2] = P.spherical_mirror_constraint(ctr1, r); 
     P.draw();
     
     % Extend the pulse back to the first mirror and create bleedthrough
-    [P2, P3] = P2.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
+    [P2, P3] = P2.spherical_mirror_constraint(ctr2, r);
     P2.draw(); 
     
     % Intersect the ray with the first surface of the first lens

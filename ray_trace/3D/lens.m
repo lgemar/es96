@@ -1,6 +1,7 @@
 classdef lens
-    % 
+    %
     properties
+        
         x % Center of the FIRST FACE of lens, x-coordinate
         r % radius
         R_CX % radius of curvature 1
@@ -13,7 +14,7 @@ classdef lens
     
     methods
         function L = lens(x, r, R_CX, R_CC, ct)
-            % L = lens(w, r, R_CX, R_CC, N);
+            
             L.x = x;
             L.r = r;
             L.R_CX = R_CX;

@@ -1,4 +1,4 @@
-function lens3d( x, y, r, R_CX, R_CC, ct)
+function lens3d( x, r, R_CX, R_CC, ct)
 % Draws a 3d lens with the CX face centered at (x,0,0)
 % r is the radius of the lens.
 % R_CX and R_CC are the radi of curvature, convex and concave
@@ -18,7 +18,7 @@ X = X + displacement;
 
 a = [0:N N-1:-1:0]'/N;
 th = (0:Nr)*2*pi/Nr;
-Y = y+a*r*cos(th);
+Y = a*r*cos(th);
 Z = a*r*sin(th);
 X = X * ones(size(th));
 surfl(X',Y',Z','light');
@@ -26,6 +26,3 @@ surfl(X',Y',Z','light');
 colormap copper;
 shading flat;
 set(gca,'dataaspectratio',[1 1 1]);
-
-% TODO: Make lens struct
-Lens = lens(x, r, R_CX, R_CC, ct, dir);

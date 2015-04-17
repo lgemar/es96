@@ -8,18 +8,16 @@ classdef mirror
         R % radius of curvature
         dir % normal ray for direction (facing detector)
         ctr % (x,y,z) coordinants of center of sphere
-        F % face
         reflect % reflectivity
     end
     
     methods
-        function M = createmirror(x, dir, r, R, reflect)
+        function M = mirror(x, dir, r, R, reflect)
             L.x = x;
             L.r = r;
             L.R = R;
             L.dir = dir;
-            L.ctr = [L.x+L.R 0 0];
-            L.F = sphere;
+            L.ctr = [L.x+L.R;0;0];
             L.reflect = reflect;
         end
             
