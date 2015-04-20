@@ -20,23 +20,24 @@ classdef PulsePoint
             h = plot3(x, y, z, 'r');
         end
         
-        function [P, P2] = vertical_plane_constraint(P, x_pos)
+        function [P] = vertical_plane_constraint(P, x_pos, n1, n2)
+            % n1, n2 are indices of refraction, going into and coming out
+            % of the surface, respectively
             d = x_pos - P.p(1); 
             P.pos_prev = P.p; 
-            P.p = P.p + d*P.dir; 
-            
-            P2 = []; 
-            new_dir = [-P.dir(1), P.dir(2), P.dir(3)]'; 
-            P2 = PulsePoint(P.p, new_dir); 
-            P2.pow = 0.99975 * P.pow; % reflected
+            P.p = P.p + (d*P.dir)/(P.dir(1)); 
+           
+           P.dir = refract_ray(P.pos_prev, P.p, [1 0 0]', n1, n2); 
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2) 
+             % point of intersection on lens
              dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
              d = fzero(dtoarc, 0);
              % Update Pulse variables for refraction
              P.pos_prev = P.p; 
              P.p = P.p + d*P.dir; 
+             % find new direction
              P.dir = refract_ray(P.pos_prev, P.p, ctr - P.p, n1, n2);
         end
         
@@ -52,12 +53,12 @@ classdef PulsePoint
             % Update Pulse variables bleed through
             P.pos_prev = P.p; 
             P.p = P.p + d*P.dir; 
-            P.pow = (1 - reflectivity) * P.pow; 
 
             % Update Pulse variables for reflection
             new_dir = reflect_ray(P.pos_prev, P.p, ctr - P.p);
             P2 = PulsePoint(P.p, new_dir); 
             P2.pow = (reflectivity) * P.pow;   
+            P.pow = (1 - reflectivity) * P.pow; 
     end
     end
 end

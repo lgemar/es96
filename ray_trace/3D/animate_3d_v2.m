@@ -3,6 +3,8 @@ clear variables
 close all
 hold on
 
+%% note to self: need to enter fields for indices of refraction for mirrors
+
 %% Set all parameters and draw mirrors, lenses, and detectors
 
 % SPECIFICATIONS
@@ -16,6 +18,7 @@ hold on
     w = 0.2; % thickness at center (in)
     l = cm2in(50); % cavity length (in)
     reflect = .99975;
+    ctr_thick = cm2in(0.2); % center thickness (cm)
     
     % the lenses
     l1 = l+1.4; % position of first lens, inch past second ICOS mirror
@@ -87,11 +90,17 @@ end
 N1 = 5; % number of RIM reflections
 N2 = 10; % number of ICOS reflections
 
+n_air = 1; % index of refraction of air
+n_ZnSe = 2.4361; % index of refraction of ZnSe
+
 for i = 1:N1 
     
     % Extend the pulse to the first mirror and create bleedthrough P_cavity
     % and reflection P_RIM
-    [P_cavity, P_RIM] = P_init.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+    [P_inter1] = P_init.vertical_mirror_constraint(mirror1.ctr(1) - ctr_thick, n_air, n_ZnSe);
+    [P_cavity, P_RIM] = P_inter1.spherical_mirror_constraint(mirror1.ctr, mirror1.R);
+    %****Joy worked with Norton 4/20 at 5:13pm - still working on correctly
+    %using mirrors
     P_cavity.draw();
     
     % P_RIM is pulse going left to RIM, P_init is pulse going right to ICOS
@@ -135,14 +144,14 @@ for i = 1:N1
         end    
 
         % Intersect the ray with the plane of the detector
-        [P, ~] = P.vertical_plane_constraint(l4);
+        [P] = P.vertical_plane_constraint(l4, 1, 1);
         P.draw();
-
+        
         % Determine if within angle of +/- 15 degrees
-        angle = radtodeg(acos(dot(P.dir,[1;0;0])));
-        if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
-            detect_pow = detect_pow + P.pow;
-        end
+         angle = radtodeg(acos(dot(P.dir,[1;0;0])));
+         if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
+             detect_pow = detect_pow + P.pow
+         end
 
         % ******* FOLLOWING P_left in next inner loop ******** 
 
