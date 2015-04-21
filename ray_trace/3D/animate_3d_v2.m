@@ -25,20 +25,24 @@ hold on
     
     % what is this? it's never used
     lf = l1 + 2*r; % d/f = 1
-    
+    % SPECS WE CAN'T CHANGE
     R_CX_1 = cm2in(8.0122); % Lens1 radii (1) 
     R_CC_1 = cm2in(29.8275); % Lens1 radii (2)
     fl1 = cm2in(7.62); % Lens 1 focal length (in)
     ct1 = cm2in(.9); % center thickness of lens
+    
+    % SPECS WE CAN CHANGE
     ct2 = .2;
     l2 = l1 + fl1; % position of second lens
-    l3 = l2 + 2; % position of third lens
+    l3 = l2 + 1; % position of third lens
+    l4 = l3 + 1; % position of fourth lens
     
     second = true; % second lens implemented
-    third = false; % third lense implemented?
+    third = false; % third lens implemented?
+    fourth = false; % fourth lens implemented?
     
     %the detector
-    l4 = l2 + 1; % position of detector
+    ld = l2 + 1; % position of detector
     size = cm2in(1); % size of detector
 
 % make and draw two mirrors in cavity
@@ -46,7 +50,7 @@ mirror3d(0, 0, 1, w, r, R);
 mirror3d(l, 0, -1, w, r, R);
 mirror3d(-distance_RIM, 0, -1, w, r, R); 
 
-% Draw the lense after the cavity
+% Draw the lenses after the cavity
 lens3d( l1, r, R_CX_1, R_CC_1, ct1);
 if second
     lens3d( l2, r/2, R_CX_1, R_CC_1, ct2);
@@ -54,15 +58,18 @@ end
 if third
     lens3d( l3, r, R_CX_1, R_CC_1, ct3);
 end
+if fourth
+    lens3d( l4, r, R_CX_1, R_CC_1, ct3);
+end
 
 % Draw the cube 
-cube3d([l4, -(size/2), -(size/2)], size);
+cube3d([ld, -(size/2), -(size/2)], size);
   
 % Draw the lens
 L = lens(l1, r, R_CX_1, R_CC_1, ct1);
 
 % Make it look pretty
-set(gca,'xlim', [-(distance_RIM+1) l4+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+set(gca,'xlim', [-(distance_RIM+1) ld+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
 camlight left;
@@ -173,7 +180,7 @@ for i = 1:N1
         end    
 
         % Intersect the ray with the plane of the detector
-        [P] = P.vertical_plane_constraint(l4, 1, 1);
+        [P] = P.vertical_plane_constraint(ld, 1, 1);
         P.draw();
         
         % Determine if within angle of +/- 15 degrees
