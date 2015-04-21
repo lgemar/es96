@@ -25,9 +25,9 @@ classdef PulsePoint
             % of the surface, respectively
             d = x_pos - P.p(1); 
             P.pos_prev = P.p; 
-            P.p = P.p + (d*P.dir)/(P.dir; 
+            P.p = P.p + (d*P.dir)/(P.dir(1)); 
            
-           P.dir = refract_ray(P.pos_prev, P.p, ctr - P.p, n1, n2); 
+           P.dir = refract_ray(P.pos_prev, P.p, [1 0 0]', n1, n2); 
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2) 
@@ -47,11 +47,12 @@ classdef PulsePoint
             
             % Determine if pulse is inside the sphere
             
-            % Find the intesection point
+            % Find the intersection point
             dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
             d = fzero(dtoarc, 0); 
             % Update Pulse variables bleed through
-            P.pos_prev = P.p; 
+            P.pos_prev = P.p;
+            % **CHECK - is this correct for refraction?
             P.p = P.p + d*P.dir; 
 
             % Update Pulse variables for reflection

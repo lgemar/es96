@@ -41,18 +41,20 @@ classdef PulsePoint
              P.dir = refract_ray(P.pos_prev, P.p, ctr - P.p, n1, n2);
         end
         
-        function [P, P2] = spherical_mirror_constraint(P, ctr, r)
+        function [P, P2] = spherical_mirror_constraint(P, ctr, r) %, n1, n2)
             % Initialize bleed through pulse
             reflectivity = 0.99975; 
             
             % Determine if pulse is inside the sphere
             
-            % Find the intesection point
+            % Find the intersection point
             dtoarc = @(d) sum((P.p + d*P.dir - ctr).^2) - r^2;
             d = fzero(dtoarc, 0); 
             % Update Pulse variables bleed through
-            P.pos_prev = P.p; 
-            P.p = P.p + d*P.dir; 
+            P.pos_prev = P.p;
+            P.p = P.p + d*P.dir;
+            % **CHECK - is this correct for refraction?            
+            %P.dir = refract_ray(P.pos_prev, P.p, (P.p - ctr)/sqrt(P.p - ctr), n1, n2); 
 
             % Update Pulse variables for reflection
             new_dir = reflect_ray(P.pos_prev, P.p, ctr - P.p);
