@@ -18,16 +18,20 @@ hold on
     w = 0.2; % thickness at center (in)
     l = cm2in(50); % cavity length (in)
     reflect = .99975;
-    ctr_thick = cm2in(0.2); % center thickness (cm)
+    ctr_thick = cm2in(0.2); % center thickness (in)
     
     % the lenses
-    l1 = l+1.4; % position of first lens, inch past second ICOS mirror
+    l1 = l+1; % position of first lens, inch past second ICOS mirror
+    
+    % what is this? it's never used
     lf = l1 + 2*r; % d/f = 1
-    R_CX = cm2in(25); % Lens radii (1) 
-    R_CC = cm2in(50); % Lens radii (2)
-    ct = .2; % center thickness of lens
+    
+    R_CX_1 = cm2in(8.0122); % Lens1 radii (1) 
+    R_CC_1 = cm2in(29.8275); % Lens1 radii (2)
+    fl1 = cm2in(7.62); % Lens 1 focal length (in)
+    ct1 = cm2in(.9); % center thickness of lens
     ct2 = .2;
-    l2 = l1 + 4; % position of second lens
+    l2 = l1 + fl1; % position of second lens
     l3 = l2 + 2; % position of third lens
     
     second = true; % second lens implemented
@@ -43,19 +47,19 @@ mirror3d(l, 0, -1, w, r, R);
 mirror3d(-distance_RIM, 0, -1, w, r, R); 
 
 % Draw the lense after the cavity
-lens3d( l1, r, R_CX, R_CC, ct);
+lens3d( l1, r, R_CX_1, R_CC_1, ct1);
 if second
-    lens3d( l2, r/2, R_CX, R_CC, ct2);
+    lens3d( l2, r/2, R_CX_1, R_CC_1, ct2);
 end
 if third
-    lens3d( l3, r, R_CX, R_CC, ct3);
+    lens3d( l3, r, R_CX_1, R_CC_1, ct3);
 end
 
 % Draw the cube 
 cube3d([l4, -(size/2), -(size/2)], size);
   
 % Draw the lens
-L = lens(l1, r, R_CX, R_CC, ct);
+L = lens(l1, r, R_CX_1, R_CC_1, ct1);
 
 % Make it look pretty
 set(gca,'xlim', [-(distance_RIM+1) l4+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
@@ -79,12 +83,12 @@ mirror2 = mirror(l,r,R,reflect, ctr_thick);
 RIMirror = mirror(-distance_RIM,r,R_RIM,reflect_RIM, ctr_thick);
 
 % create lenses
-lens1 = lens(l1, r, R_CX, R_CC, ct);
+lens1 = lens(l1, r, R_CX_1, R_CC_1, ct1);
 if second
-    lens2 = lens(l2, r, R_CX, R_CC, ct);
+    lens2 = lens(l2, r, R_CX_1, R_CC_1, ct1);
 end
 if third
-    lens3 = lens(l3, r, R_CX, R_CC, ct);
+    lens3 = lens(l3, r, R_CX_1, R_CC_1, ct1);
 end
 
 N1 = 3; % number of RIM reflections
