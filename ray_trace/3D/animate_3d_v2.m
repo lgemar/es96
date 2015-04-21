@@ -69,7 +69,7 @@ cube3d([ld, -(size/2), -(size/2)], size);
 L = lens(l1, r, R_CX_1, R_CC_1, ct1);
 
 % Make it look pretty
-set(gca,'xlim', [-(distance_RIM+1) ld+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+set(gca,'xlim', [-(distance_RIM+1) ld+1], 'ylim', 5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
 camlight left;
@@ -98,7 +98,7 @@ if third
     lens3 = lens(l3, r, R_CX_1, R_CC_1, ct1);
 end
 
-N1 = 3; % number of RIM reflections
+N1 = 5; % number of RIM reflections
 N2 = 5; % number of ICOS reflections
 
 n_air = 1; % index of refraction of air
@@ -111,7 +111,7 @@ for i = 1:N1
     % and reflection P_RIM
     
     % ray intersects flat surface of first mirror, bleedthrough
-    [P_inter1] = P_init.vertical_plane_constraint(mirror1.ctr(1) - ctr_thick, n_air, n_ZnSe);
+    [P_inter1] = P_init.vertical_plane_constraint(mirror1.x - ctr_thick, n_air, n_ZnSe);
     P_inter1.draw();
     
     % ray intersects reflective curved surface of first mirror, bleedthrough
@@ -119,84 +119,84 @@ for i = 1:N1
     % **CHECK (2) - there's something wrong here when I try to draw P_RIM
     % 11 lines down; does there need to be refraction coming from within
     % the mirror to bleeding through the spherical surface?
-    [P_cavity, P_inter2] = P_inter1.spherical_mirror_constraint(mirror1.ctr, mirror1.R);
+    [P_cavity, P_inter2] = P_inter1.spherical_mirror_constraint(mirror1, n_ZnSe, n_air);
     
     % draw the ray traveling between flat surface of 1st mirror to curved
     % surface of 1st mirror (within mirror1)
     P_cavity.draw();
  
     % ray bleeds through flat surface of first mirror
-    [P_RIM] = P_inter2.vertical_plane_constraint(mirror1.ctr(1) - ctr_thick, n_ZnSe, n_air);
+    [P_RIM] = P_inter2.vertical_plane_constraint(mirror1.x - ctr_thick, n_ZnSe, n_air);
    
     % draw reflected ray within the mirror1
     P_RIM.draw();
     
     % P_RIM is pulse going left through RIM, P_init is pulse going right to ICOS
     % P_init will be used on the next loop as the incoming ray
-    [P_RIM,P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr,RIMirror.R);
+    [P_RIM,P_init] = P_RIM.spherical_mirror_constraint(RIMirror, n_air, n_ZnSe);
     P_RIM.draw();
     
-    for j = 1:N2
-        
-        P_rt = P_cavity;
-
-        % Extend the pulse back to the second mirror and create bleedthrough
-        [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
-        P_rt.draw();
-        
-        % CHECK (3) - when I added this, I ran into the error of
-        % lens_constraint complaining that fzero needed a finite and real
-        % starting guess...?
-        
-        % ray intersects flat surface of second mirror, bleedthrough
-        % [P_rt] = P_rt.vertical_plane_constraint(mirror2.ctr(1) - ctr_thick, n_ZnSe, n_air);
-        % P_rt.draw();        
-
-        % ******* FOLLOWING P_rt ******** 
-
-        % Intersect the ray with the first surface of the first lens
-        P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
-        P.draw(); 
-
-        % Intersect the ray with the second surface of the first lens
-        P = P.lens_constraint(lens1.ctr2, lens1.R_CC, 5, 1); 
-        P.draw(); 
-
-        if second
-            % Intersect the ray with the first surface of the second lens
-            P = P.lens_constraint(lens2.ctr1, lens2.R_CX, 1, 5); 
-            P.draw(); 
-            % Intersect the ray with the second surface of the second lens
-            P = P.lens_constraint(lens2.ctr2, lens2.R_CC, 5, 1); 
-            P.draw();     
-        end
-        if third
-            % Intersect the ray with the first surface of the third lens
-            P = P.lens_constraint(lens3.ctr1, lens3.R_CX, 1, 5); 
-            P.draw(); 
-            % Intersect the ray with the second surface of the third lens
-            P = P.lens_constraint(lens3.ctr2, lens3.R_CC, 5, 1); 
-            P.draw();  
-        end    
-
-        % Intersect the ray with the plane of the detector
-        [P] = P.vertical_plane_constraint(ld, 1, 1);
-        P.draw();
-        
-        % Determine if within angle of +/- 15 degrees
-         angle = radtodeg(acos(dot(P.dir,[1;0;0])));
-         if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
-             detect_pow = detect_pow + P.pow;
-         end
-
-        % ******* FOLLOWING P_left in next inner loop ******** 
-
-        % Extend the pulse to the first mirror and reflect back as P_cavity 
-        % for next loop
-        [P_left, P_cavity] = P_left.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
-        P_left.draw();
-        
-        % Draw the pulses up until now
-        drawnow;  
-    end
+%     for j = 1:N2
+%         
+%         P_rt = P_cavity;
+% 
+%         % Extend the pulse back to the second mirror and create bleedthrough
+%         [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R, n_air, n_ZnSe);
+%         P_rt.draw();
+%         
+%         % CHECK (3) - when I added this, I ran into the error of
+%         % lens_constraint complaining that fzero needed a finite and real
+%         % starting guess...?
+%         
+%         % ray intersects flat surface of second mirror, bleedthrough
+%         % [P_rt] = P_rt.vertical_plane_constraint(mirror2.x - ctr_thick, n_ZnSe, n_air);
+%         % P_rt.draw();        
+% 
+%         % ******* FOLLOWING P_rt ******** 
+% 
+%         % Intersect the ray with the first surface of the first lens
+%         P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
+%         P.draw(); 
+% 
+%         % Intersect the ray with the second surface of the first lens
+%         P = P.lens_constraint(lens1.ctr2, lens1.R_CC, 5, 1); 
+%         P.draw(); 
+% 
+%         if second
+%             % Intersect the ray with the first surface of the second lens
+%             P = P.lens_constraint(lens2.ctr1, lens2.R_CX, 1, 5); 
+%             P.draw(); 
+%             % Intersect the ray with the second surface of the second lens
+%             P = P.lens_constraint(lens2.ctr2, lens2.R_CC, 5, 1); 
+%             P.draw();     
+%         end
+%         if third
+%             % Intersect the ray with the first surface of the third lens
+%             P = P.lens_constraint(lens3.ctr1, lens3.R_CX, 1, 5); 
+%             P.draw(); 
+%             % Intersect the ray with the second surface of the third lens
+%             P = P.lens_constraint(lens3.ctr2, lens3.R_CC, 5, 1); 
+%             P.draw();  
+%         end    
+% 
+%         % Intersect the ray with the plane of the detector
+%         [P] = P.vertical_plane_constraint(ld, 1, 1);
+%         P.draw();
+%         
+%         % Determine if within angle of +/- 15 degrees
+%          angle = radtodeg(acos(dot(P.dir,[1;0;0])));
+%          if abs(P.p(2))<cm2in(10) && abs(P.p(3))<cm2in(10)
+%              detect_pow = detect_pow + P.pow;
+%          end
+% 
+%         % ******* FOLLOWING P_left in next inner loop ******** 
+% 
+%         % Extend the pulse to the first mirror and reflect back as P_cavity 
+%         % for next loop
+%         [P_left, P_cavity] = P_left.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+%         P_left.draw();
+%         
+%         % Draw the pulses up until now
+%         drawnow;  
+%     end
 end
