@@ -97,7 +97,6 @@ N2 = 5; % number of ICOS reflections
 
 for i = 1:N1 
     
-    P_init.draw();
     % Extend the pulse to the first mirror and create bleedthrough P_cavity
     % and reflection P_RIM
     
@@ -107,10 +106,7 @@ for i = 1:N1
     
     % ray intersects reflective curved surface of first mirror, bleedthrough
     % and reflect
-    % **CHECK (2) - there's something wrong here when I try to draw P_RIM
-    % 11 lines down; does there need to be refraction coming from within
-    % the mirror to bleeding through the spherical surface?
-    [P_cavity, P_inter2] = P_inter1.spherical_mirror_constraint(mirror1.ctr, mirror1.R);
+    [P_cavity, P_inter2] = P_inter1.spherical_mirror_constraint(mirror1.ctr, mirror1.R, n_ZnSe, n_air);
     
     % draw the ray traveling between flat surface of 1st mirror to curved
     % surface of 1st mirror (within mirror1)
@@ -124,7 +120,8 @@ for i = 1:N1
     
     % P_RIM is pulse going left through RIM, P_init is pulse going right to ICOS
     % P_init will be used on the next loop as the incoming ray
-    [P_RIM,P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr,RIMirror.R);
+    [P_RIM,P_init] = P_RIM.spherical_mirror_constraint(RIMirror.ctr,RIMirror.R, n_air, n_ZnSe);
+    % here, there will be no refraction so indices shouldn't matter
     P_RIM.draw();
     
     for j = 1:N2
@@ -132,7 +129,7 @@ for i = 1:N1
         P_rt = P_cavity;
 
         % Extend the pulse back to the second mirror and create bleedthrough
-        [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
+        [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R, n_air, n_ZnSe);
         P_rt.draw();
         
         % ray intersects flat surface of second mirror, bleedthrough
@@ -142,27 +139,27 @@ for i = 1:N1
         % ******* FOLLOWING P_rt ******** 
 
         % Intersect the ray with the first surface of the first lens
-        P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, 1, 5); 
+        P = P_rt.lens_constraint(lens1.ctr1, lens1.R_CX, n_air, n_ZnSe); 
         P.draw(); 
 
         % Intersect the ray with the second surface of the first lens
-        P = P.lens_constraint(lens1.ctr2, lens1.R_CC, 5, 1); 
+        P = P.lens_constraint(lens1.ctr2, lens1.R_CC, n_ZnSe, n_air); 
         P.draw(); 
 
         if second
             % Intersect the ray with the first surface of the second lens
-            P = P.lens_constraint(lens2.ctr1, lens2.R_CX, 1, 5); 
+            P = P.lens_constraint(lens2.ctr1, lens2.R_CX, n_air, n_ZnSe); 
             P.draw(); 
             % Intersect the ray with the second surface of the second lens
-            P = P.lens_constraint(lens2.ctr2, lens2.R_CC, 5, 1); 
+            P = P.lens_constraint(lens2.ctr2, lens2.R_CC, n_ZnSe, n_air); 
             P.draw();     
         end
         if third
             % Intersect the ray with the first surface of the third lens
-            P = P.lens_constraint(lens3.ctr1, lens3.R_CX, 1, 5); 
+            P = P.lens_constraint(lens3.ctr1, lens3.R_CX, n_air, n_ZnSe); 
             P.draw(); 
             % Intersect the ray with the second surface of the third lens
-            P = P.lens_constraint(lens3.ctr2, lens3.R_CC, 5, 1); 
+            P = P.lens_constraint(lens3.ctr2, lens3.R_CC, n_ZnSe, n_air); 
             P.draw();  
         end    
 
@@ -180,7 +177,7 @@ for i = 1:N1
 
         % Extend the pulse to the first mirror and reflect back as P_cavity 
         % for next loop
-        [P_left, P_cavity] = P_left.spherical_mirror_constraint(mirror1.ctr, mirror1.R); 
+        [P_left, P_cavity] = P_left.spherical_mirror_constraint(mirror1.ctr, mirror1.R, n_air, n_ZnSe); 
         P_left.draw();
         
         % Draw the pulses up until now
