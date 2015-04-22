@@ -27,7 +27,7 @@ classdef PulsePoint
             P.pos_prev = P.p; 
             P.p = P.p + (d*P.dir)/(P.dir(1)); 
            
-           P.dir = refract_ray(P.pos_prev, P.p, [1 0 0]', n1, n2); 
+            P.dir = refract_ray(P.pos_prev, P.p, [1 0 0]', n1, n2); 
         end
         
         function P = lens_constraint(P, ctr, r, n1, n2) 
@@ -58,9 +58,9 @@ classdef PulsePoint
 
             % Update Pulse variables for reflection
             new_dir = reflect_ray(P.pos_prev, P.p, ctr - P.p);
-            P2 = PulsePoint(P.p, new_dir); 
-            P2.pow = (reflectivity) * P.pow;   
-            P.pow = (1 - reflectivity) * P.pow; 
+            P2 = PulsePoint(P.p, new_dir);
+            P2.pow = (reflectivity) * P.pow;
+            P.pow = (1 - reflectivity) * P.pow;
     end
     end
 end

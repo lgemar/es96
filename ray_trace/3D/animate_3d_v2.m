@@ -8,6 +8,9 @@ hold on
 %% Set all parameters and draw mirrors, lenses, and detectors
 
 % SPECIFICATIONS
+
+    n_air = 1; % index of refraction of air
+    n_ZnSe = 2.4361; % index of refraction of ZnSe
     % the RIM
     R_RIM = cm2in(39.37); % radius of curvature of RIM (in)
     distance_RIM = 9.84; % distance between RIM mirror and 1st ICOS mirror
@@ -58,9 +61,10 @@ cube3d([l4, -(size/2), -(size/2)], size);
 L = lens(l1, r, R_CX, R_CC, ct);
 
 % Make it look pretty
-set(gca,'xlim', [-(distance_RIM+1) l4+1], 'ylim', 1.5*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
+set(gca,'xlim', [-(distance_RIM+1) l4+1], 'ylim', 10*[-r r], 'DataAspectRatio',[1 1 1],'visible','off');
 set(gca,'visible','off');
 set(gcf,'color',[.75 .75 1]);
+alpha(.5);
 camlight left;
 camlight right;
 camlight headlight;
@@ -74,12 +78,13 @@ P_init = PulsePoint(p0, dir_initial); % Initial Pulse
 detect_pow = 0;
 
 % create mirrors
-mirror1 = mirror(0,r,R,reflect, ctr_thick);
-mirror2 = mirror(l,r,R,reflect, ctr_thick);
-RIMirror = mirror(-distance_RIM,r,R_RIM,reflect_RIM, ctr_thick);
+mirror1 = mirror(0,r,R,1,reflect, ctr_thick);
+mirror2 = mirror(l,r,R,-1,reflect, ctr_thick);
+RIMirror = mirror(-distance_RIM,r,R_RIM,1,reflect_RIM, ctr_thick);
 
 % create lenses
 lens1 = lens(l1, r, R_CX, R_CC, ct);
+% TODO change parameters
 if second
     lens2 = lens(l2, r, R_CX, R_CC, ct);
 end
@@ -90,9 +95,6 @@ end
 N1 = 3; % number of RIM reflections
 N2 = 5; % number of ICOS reflections
 
-n_air = 1; % index of refraction of air
-n_ZnSe = 2.4361; % index of refraction of ZnSe
-
 for i = 1:N1 
     
     P_init.draw();
@@ -100,7 +102,7 @@ for i = 1:N1
     % and reflection P_RIM
     
     % ray intersects flat surface of first mirror, bleedthrough
-    [P_inter1] = P_init.vertical_plane_constraint(mirror1.ctr(1) - ctr_thick, n_air, n_ZnSe);
+    [P_inter1] = P_init.vertical_plane_constraint(mirror1.x - mirror1.ctr_thick, n_air, n_ZnSe);
     P_inter1.draw();
     
     % ray intersects reflective curved surface of first mirror, bleedthrough
@@ -115,7 +117,7 @@ for i = 1:N1
     P_cavity.draw();
  
     % ray bleeds through flat surface of first mirror
-    [P_RIM] = P_inter2.vertical_plane_constraint(mirror1.ctr(1) - ctr_thick, n_ZnSe, n_air);
+    [P_RIM] = P_inter2.vertical_plane_constraint(mirror1.x - mirror1.ctr_thick, n_ZnSe, n_air);
    
     % draw reflected ray within the mirror1
     P_RIM.draw();
@@ -133,13 +135,9 @@ for i = 1:N1
         [P_rt, P_left] = P_rt.spherical_mirror_constraint(mirror2.ctr, mirror2.R);
         P_rt.draw();
         
-        % CHECK (3) - when I added this, I ran into the error of
-        % lens_constraint complaining that fzero needed a finite and real
-        % starting guess...?
-        
         % ray intersects flat surface of second mirror, bleedthrough
-        % [P_rt] = P_rt.vertical_plane_constraint(mirror2.ctr(1) - ctr_thick, n_ZnSe, n_air);
-        % P_rt.draw();        
+        [P_rt] = P_rt.vertical_plane_constraint(mirror2.x - ctr_thick, n_ZnSe, n_air);
+        P_rt.draw();        
 
         % ******* FOLLOWING P_rt ******** 
 
