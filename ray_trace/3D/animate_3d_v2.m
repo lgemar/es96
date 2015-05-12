@@ -69,7 +69,7 @@ mirror3d(0, 0, 1, w, r, R);
 mirror3d(l, 0, -1, w, r, R);
 mirror3d(-distance_RIM, 0, -1, w, r, R); 
 
-% Draw the lense after the cavity
+% Draw the lenses after the cavity
 lens3d( l1, r1, R_CX_1, R_CC_1, ct1);
 if second
     lens3d( l2, r2, R_CX_2, R_CC_2, ct2);

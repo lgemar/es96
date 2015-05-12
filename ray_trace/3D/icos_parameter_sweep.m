@@ -33,11 +33,11 @@
 % Create a table of parameters, where each row is a set of parameters used
 %   to run through the simulation. The table might look like this in the
 %   simple case: 
-%   r_icos    l_cavity
-%   50        48
-%   50        48.5
-%   50        49
-%   50        49.5
+%   r_icos    l_cavity      f 
+%   50        48       [20 21 22 23] 
+%   50        48.5     [23 24 25 26]
+%   50        49       [27 28 29 30]
+%   50        49.5     [19 21 23 25]
 
 % Step 2: 
 % Apply the icos simulation to every row in the parameter configuration
@@ -61,7 +61,7 @@
 % parameters constant. Remember, the trials table must have a value for
 % every parameter in each row in order to run the trial
 
-% Define the nubmer of trials
+% Define the number of trials
 N = 20; 
 n_lens = 2; % fix the number of lenses to consider
 
